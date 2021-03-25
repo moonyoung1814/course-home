@@ -71,11 +71,11 @@
 
 <script>
 export default {
-  name: "userInfo",
+  name: 'userInfo',
   props: {
     title: {
       type: String,
-      default: "账号信息"
+      default: '账号信息'
     },
     dialogVisible: {
       type: Boolean,
@@ -83,58 +83,58 @@ export default {
     },
     userId: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   data () {
     var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"))
+      if (value === '') {
+        callback(new Error('请输入密码'))
       } else {
-        if (this.ruleForm2.checkPass !== "") {
-          this.$refs.ruleForm2.validateField("checkPass")
+        if (this.ruleForm2.checkPass !== '') {
+          this.$refs.ruleForm2.validateField('checkPass')
         }
         callback()
       }
     }
     var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请再次输入密码"))
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
       } else if (value !== this.ruleForm2.password) {
-        callback(new Error("两次输入密码不一致!"))
+        callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
       }
     }
     return {
       roleName: false,
-      roleData: "",
+      roleData: '',
       visible: this.dialogVisible,
       ruleForm2: {
-        mobilePhone: "",
-        username: "",
-        password: "",
-        checkPass: "",
-        roleId: "",
-        status: "",
-        sex: "1",
+        mobilePhone: '',
+        username: '',
+        password: '',
+        checkPass: '',
+        roleId: '',
+        status: '',
+        sex: '1',
         age: 0,
-        name: "",
-        avatar: ""
+        name: '',
+        avatar: ''
       },
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 18, message: "长度在 3 到 18 个字符", trigger: "blur" }
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 18, message: '长度在 3 到 18 个字符', trigger: 'blur' }
         ],
         password: [
-          {required: true, validator: validatePass, trigger: "blur"}
+          {required: true, validator: validatePass, trigger: 'blur'}
         ],
         checkPass: [
-          {required: true, validator: validatePass2, trigger: "blur"}
+          {required: true, validator: validatePass2, trigger: 'blur'}
         ],
         roleId: [
-          { required: true, message: "请选择用户角色", trigger: "change" }
+          { required: true, message: '请选择用户角色', trigger: 'change' }
         ]
       }
     }
@@ -144,18 +144,18 @@ export default {
       this.ruleForm2.avatar = res.data[0]
     },
     closeCallback () {
-      this.$emit("successCallback")
+      this.$emit('successCallback')
     },
     beforeAvatarUpload (file) {
-      const isJPG = file.type === "image/jpeg"
-      const isPNG = file.type === "image/png"
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!(isJPG || isPNG)) {
-        this.$message.error("上传头像图片只能是 JPG/PNG 格式!")
+        this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!")
+        this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       // eslint-disable-next-line no-mixed-operators
       return isLt2M && isJPG || isPNG
@@ -171,8 +171,8 @@ export default {
         that.$request.fetchGetUserInfoId({id: userId})
           .then(function (res) {
             console.log(res)
-            res.data.password = ""
-            if (res.data.status === "1") {
+            res.data.password = ''
+            if (res.data.status === '1') {
               res.data.status = true
             } else {
               res.data.status = false
@@ -181,7 +181,7 @@ export default {
             that.ruleForm2 = res.data
             that.roleName = true
             for (let i = 0; i < that.roleData.length; i++) {
-              if (that.$store.getters.info.role === "超级管理员" && that.$store.getters.info.uid !== userId) {
+              if (that.$store.getters.info.role === '超级管理员' && that.$store.getters.info.uid !== userId) {
                 that.roleName = false
               }
             }
@@ -203,14 +203,14 @@ export default {
           let fetchFn = this.$request.fetchEditUser
           if (!that.userId) {
             for (let item in that.ruleForm2) {
-              if (item !== "checkPass") {
+              if (item !== 'checkPass') {
                 newData[item] = that.ruleForm2[item]
               }
             }
             fetchFn = this.$request.fetchRegister
           } else {
             for (let item in that.ruleForm2) {
-              if (item !== "password" && item !== "checkPass") {
+              if (item !== 'password' && item !== 'checkPass') {
                 newData[item] = that.ruleForm2[item]
               }
             }
@@ -219,13 +219,13 @@ export default {
             that.$message({
               showClose: true,
               message: res.data.message,
-              type: "success"
+              type: 'success'
             })
           }).catch((err) => {
             console.log(err)
           })
         } else {
-          console.log("error submit!!")
+          console.log('error submit!!')
           return false
         }
       })

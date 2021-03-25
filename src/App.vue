@@ -1,21 +1,22 @@
 <template>
   <div id="app">
     <transition name="fade" mode="out-in">
-      <router-view></router-view>
+			<router-view></router-view>
     </transition>
   </div>
 </template>
 
 <script>
 export default {
-  name: "app"
+  name: 'app'
 }
 
 </script>
 
 <style lang="scss">
+@import '@/assets/scss/main.scss';
 body {
-	margin: 0px;
+  margin: 0px;
 	padding: 0px;
 	font-family: Microsoft YaHei, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,  SimSun, sans-serif;
 	font-size: 14px;

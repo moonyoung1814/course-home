@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: "btnPermissions"
+  name: 'btnPermissions'
 }
 </script>
 

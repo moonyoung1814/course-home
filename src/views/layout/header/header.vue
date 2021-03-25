@@ -33,28 +33,28 @@
 </template>
 
 <script>
-import Cookies from "js-cookie"
-import langSelect from "../../../components/lang/langSelect"
-import tabNav from "./tabNav"
-import UserInfo from "../../../components/userForm/userInfo"
-import EditPassword from "../../../components/userForm/editPassword"
+import Cookies from 'js-cookie'
+import langSelect from '../../../components/lang/langSelect'
+import tabNav from './tabNav'
+import UserInfo from '../../../components/userForm/userInfo'
+import EditPassword from '../../../components/userForm/editPassword'
 
 export default {
-  name: "Header",
+  name: 'Header',
   components: {EditPassword, tabNav, langSelect, UserInfo},
   data () {
     return {
       isfullScreen: true,
-      avatar: "./static/images/icon.jpg",
+      avatar: './static/images/icon.jpg',
       dialogInfoVisible: false,
       dialogPassVisible: false,
-      title: "",
-      userId: ""
+      title: '',
+      userId: ''
     }
   },
   methods: {
     collapse () {
-      this.$store.dispatch("collapse")
+      this.$store.dispatch('collapse')
     },
     successCallback () {
       this.dialogInfoVisible = false
@@ -89,14 +89,14 @@ export default {
       }
     },
     handleCommand (command) {
-      if (command === "info") {
+      if (command === 'info') {
         this.dialogInfoVisible = true
-        this.title = "编辑信息"
+        this.title = '编辑信息'
         // this.userId = this.$store.getters.info.uid
-      } else if (command === "editPassword") {
+      } else if (command === 'editPassword') {
         this.dialogPassVisible = true
-      } else if (command === "logout") {
-        Cookies.remove("token")
+      } else if (command === 'logout') {
+        Cookies.remove('token')
         location.reload()
       }
     }

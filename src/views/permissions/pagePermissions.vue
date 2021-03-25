@@ -46,7 +46,7 @@ export default {
       case "ordinary":
         this.options = {
           role: "ordinary",
-          permissions: "普通用户"
+          permissions: '普通用户'
         }
       }
       this.$store.dispatch("setRole", this.options)

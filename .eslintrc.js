@@ -34,7 +34,9 @@ module.exports = {
     "no-undef": 1, //不能有未定义的变量
     "no-redeclare": 2,//禁止重复声明变量
     "eqeqeq": [2, "allow-null"], // 使用 === 替代 ==
-    "quotes": [ 2, "double"], // 使用双引号
-    "semi": [2, "never"] // 不使用分号
+    "quotes": [ 2, "single"], // 使用单引号
+    "semi": [2, "never"], // 不使用分号
+    "no-unused-expressions": 0,
+    "no-tabs": 0
   }
 }
