@@ -17,7 +17,12 @@ const cn = {
     table: '表格',
     navMenu: '导航菜单',
     courseManage: '课程管理',
-    createDocx: '生成教学文档'
+    createDocx: '生成教学文档',
+    courseInfo: '课程信息',
+    courseApply: '入班申请',
+    infoManage: '个人信息管理',
+    studentInfo: '学生个人信息',
+    teacherInfo: '教师个人信息'
   },
   rightMenu: {
     close: '关闭',

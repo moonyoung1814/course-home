@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie'
 export default {
-  name: "editPassword",
+  name: 'editPassword',
   props: {
     dialogVisible: {
       type: Boolean,
@@ -33,24 +33,24 @@ export default {
   },
   data () {
     var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"))
+      if (value === '') {
+        callback(new Error('请输入密码'))
       } else if (value.toString().length < 6) {
-        callback(new Error("密码长度不能低于6位"))
+        callback(new Error('密码长度不能低于6位'))
       } else {
-        if (this.ruleForm2.checkPass !== "") {
-          this.$refs.ruleForm2.validateField("checkPass")
+        if (this.ruleForm2.checkPass !== '') {
+          this.$refs.ruleForm2.validateField('checkPass')
         }
         callback()
       }
     }
     var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请再次输入密码"))
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
       } else if (value.toString().length < 6) {
-        callback(new Error("密码长度不能低于6位"))
+        callback(new Error('密码长度不能低于6位'))
       } else if (value !== this.ruleForm2.password) {
-        callback(new Error("两次输入密码不一致!"))
+        callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
       }
@@ -58,26 +58,26 @@ export default {
     return {
       visible: this.dialogVisible,
       ruleForm2: {
-        oldPassword: "",
-        password: "",
-        checkPass: ""
+        oldPassword: '',
+        password: '',
+        checkPass: ''
       },
       rules2: {
         oldPassword: [
-          {required: true, validator: validatePass, trigger: "blur"}
+          {required: true, validator: validatePass, trigger: 'blur'}
         ],
         password: [
-          {required: true, validator: validatePass, trigger: "blur"}
+          {required: true, validator: validatePass, trigger: 'blur'}
         ],
         checkPass: [
-          {required: true, validator: validatePass2, trigger: "blur"}
+          {required: true, validator: validatePass2, trigger: 'blur'}
         ]
       }
     }
   },
   methods: {
     closeCallback () {
-      this.$emit("editPwdCallback")
+      this.$emit('editPwdCallback')
     },
     submitForm (formName) {
       let that = this
@@ -90,21 +90,21 @@ export default {
             that.$message({
               showClose: true,
               message: res.data.message,
-              type: "success"
+              type: 'success'
             })
             setTimeout(function () {
-              Cookies.remove("access_token")
+              Cookies.remove('access_token')
               location.reload()
             }, 3000)
           }).catch((err) => {
             that.$message({
               showClose: true,
               message: err.data.message,
-              type: "error"
+              type: 'error'
             })
           })
         } else {
-          console.log("error submit!!")
+          console.log('error submit!!')
           return false
         }
       })

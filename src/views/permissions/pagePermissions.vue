@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "pagePermissions",
+  name: 'pagePermissions',
   data () {
     return {
       permissions: this.$store.getters.info.role,
@@ -26,35 +26,35 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch("setRole", this.options)
+    this.$store.dispatch('setRole', this.options)
   },
   watch: {
     permissions (newQuestion, oldQuestion) {
       switch (newQuestion) {
-      case "teacher":
+      case 'teacher':
         this.options = {
-          role: "teacher",
-          permissions: "教师"
+          role: 'teacher',
+          permissions: '教师'
         }
         break
-      case "student":
+      case 'student':
         this.options = {
-          role: "student",
-          permissions: "学生"
+          role: 'student',
+          permissions: '学生'
         }
         break
-      case "ordinary":
+      case 'ordinary':
         this.options = {
-          role: "ordinary",
+          role: 'ordinary',
           permissions: '普通用户'
         }
       }
-      this.$store.dispatch("setRole", this.options)
+      this.$store.dispatch('setRole', this.options)
 
       //  刷新 tabnav 权限管理测试需要
-      this.$store.dispatch("removeOtherTab", {tabItem: {
-        title: "pageControl",
-        path: "/pagePermissions"
+      this.$store.dispatch('removeOtherTab', {tabItem: {
+        title: 'pageControl',
+        path: '/pagePermissions'
       },
       router: this.$router})
     }

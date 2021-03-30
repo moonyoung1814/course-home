@@ -37,16 +37,16 @@
 </template>
 
 <script>
-import menuTree from "./menuTree"
+import menuTree from './menuTree'
 
 export default {
-  name: "asideNav",
+  name: 'asideNav',
   components: {
     menuTree
   },
   watch: {
     // 监听浏览器直接输入路由，将此路由添加到tabnavBox
-    "$route.path": function (val) {
+    '$route.path': function (val) {
       this.selectmenu(val)
     }
   },
@@ -55,7 +55,7 @@ export default {
       // 如果不使用 elemenUI 菜单的 vue-router 的模式将用以下方式进行页面跳转 el-menu的router设置为false
       // this.$router.push(indexpath.join("/"))
       let router = this.$store.getters.routers
-      let name = ""
+      let name = ''
       let navTitle = function (path, routerARR) {
         for (let i = 0; i < routerARR.length; i++) {
           if (routerARR[i].children.length > 0 || routerARR[i].path === path) {
@@ -68,7 +68,7 @@ export default {
         }
         return name
       }
-      this.$store.dispatch("addTab", {
+      this.$store.dispatch('addTab', {
         title: navTitle(key, router),
         path: key
       })

@@ -8,7 +8,10 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  created: async function () {
+    await this.$store.dispatch('getInfo')
+  }
 }
 
 </script>

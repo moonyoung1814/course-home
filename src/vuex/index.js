@@ -1,33 +1,36 @@
-import Vue from "vue"
-import Vuex from "vuex"
-import Cookies from "js-cookie"
-import routerData from "./modules/routerData"
-import role from "./modules/role"
-import layout from "./modules/layout/index"
+import Vue from 'vue'
+import Vuex from 'vuex'
+import Cookies from 'js-cookie'
+import routerData from './modules/routerData'
+import role from './modules/role'
+import layout from './modules/layout/index'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    token: Cookies.get("token")
+    token: Cookies.get('token')
   },
   mutations: {
     setToken (state, token) {
       state.token = token
-      Cookies.set("token", token, { expires: 1 / 24 })
+      Cookies.set('token', token, { expires: 1 / 24 })
     }
   },
   actions: {
     setToken ({commit}, token) {
       return new Promise((resolve, reject) => {
-        commit("setToken", token)
+        commit('setToken', token)
         resolve()
       })
     }
   },
   getters: {
     addRouters: state => state.routerData.addRouters,
-    token: state => state.token,
+    token: state => {
+      console.log(state)
+      return state.token
+    },
     info: state => state.role.info,
     routers: state => state.routerData.routers,
     logoShow: state => state.layout.logoShow,

@@ -1,4 +1,4 @@
-import {defaultRouter, addRouter} from "@/router/index"
+import {defaultRouter, addRouter} from '@/router/index'
 
 const routerData = {
   state: {
@@ -15,10 +15,13 @@ const routerData = {
     newRoutes ({commit}, role) {
       //  通过递归路由表，删除掉没有权限的路由
       function eachSelect (routers, userRole) {
+        console.log(routers)
         for (let j = 0; j < routers.length; j++) {
           if (routers[j].meta && routers[j].meta.role.length && routers[j].meta.role.indexOf(userRole) === -1) {
             routers.splice(j, 1)
-            j = j !== 0 ? j - 1 : j
+            // j = j !== 0 ? j - 1 : j
+            j = j - 1
+            continue
           }
           if (routers[j].children && routers[j].children.length) {
             eachSelect(routers[j].children, userRole)
@@ -28,7 +31,7 @@ const routerData = {
       // 仅限演示
       let newArr = [...addRouter] // 拷贝这个数组是因为做权限测试的时候可以从低级切回到高级角色，仅限演示，正式开发时省略这步直接使用 addRouter
       eachSelect(newArr, role)
-      commit("setRouters", newArr)
+      commit('setRouters', newArr)
 
       // 正式开发
       // eachSelect(addRouter, role)

@@ -17,7 +17,12 @@ const en = {
     table: 'table',
     navMenu: 'navMenu',
     courseManage: 'courseManage',
-    createDocx: 'createDocx'
+    createDocx: 'createDocx',
+    courseInfo: 'courseInfo',
+    courseApply: 'courseApply',
+    infoManage: 'infoManage',
+    studentInfo: 'studentInfo',
+    teacherInfo: 'teacherInfo'
   },
   rightMenu: {
     close: 'close',

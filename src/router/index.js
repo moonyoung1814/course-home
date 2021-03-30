@@ -85,13 +85,56 @@ let addRouter = [
     iconCls: 'fa fa-universal-access',
     name: routeName.courseManage,
     component: Layout,
-    meta: {role: ['teacher']},
+    meta: {role: ['teacher', 'student']},
     children: [
       {
+        // path: '/courseManage/createDocx',
         path: '/courseManage/createDocx',
         iconCls: 'fa fa-toggle-on',
         name: routeName.createDocx,
         component: () => import('@/views/courseManage/createDocx'),
+        meta: {role: ['teacher']},
+        children: []
+      },
+      {
+        path: '/courseManage/information',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.courseInfo,
+        component: () => import('@/views/courseManage/courseInfo'),
+        meta: {role: ['teacher']},
+        children: []
+      },
+      {
+        path: '/courseManage/courseApply',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.courseApply,
+        component: () => import('@/views/courseManage/courseApply'),
+        meta: {role: ['student']},
+        children: []
+      }
+    ]
+  },
+  {
+    path: '/',
+    iconCls: 'fa fa-universal-access',
+    name: routeName.infoManage,
+    component: Layout,
+    meta: {role: ['teacher', 'student']},
+    children: [
+      {
+        path: '/infoManage/teacherInfo',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.teacherInfo,
+        component: () => import('@/views/infoManage/teacherInfo'),
+        meta: {role: ['teacher']},
+        children: []
+      },
+      {
+        path: '/infoManage/studentInfo',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.studentInfo,
+        component: () => import('@/views/infoManage/studentInfo'),
+        meta: {role: ['student']},
         children: []
       }
     ]

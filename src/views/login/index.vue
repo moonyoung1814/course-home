@@ -29,6 +29,10 @@
               <el-form-item>
                 <el-button class="subBtn" type="primary" @click="submitForm">登录</el-button>
               </el-form-item>
+              <el-form-item>
+                  <el-radio v-model="radio" label="teacher">老师</el-radio>
+                  <el-radio v-model="radio" label="student">学生</el-radio>
+              </el-form-item>
               <p class="smalltxt">
                 <router-link class="a" to="#">忘记密码</router-link>
                 <router-link class="a" to="#">忘记会员名</router-link>
@@ -71,7 +75,8 @@ export default {
       loginForm: {
         username: 'vue-xuadmin',
         password: '123456'
-      }
+      },
+      radio: 'teacher'
     }
   },
   methods: {
@@ -100,9 +105,26 @@ export default {
         // })
 
         // 将 username 设置为 token 存储在 store，仅为测试效果，实际存储 token 以后台返回为准
-        that.$store.dispatch('setToken', that.loginForm.username).then(() => {
+        that.$store.dispatch('setToken', that.loginForm.username).then(async () => {
+          switch (this.radio) {
+          case 'teacher': {
+            await that.$store.dispatch('setInfo', {
+              role: 'teacher',
+              permissions: '教师'
+            })
+            break
+          }
+          case 'student': {
+            await that.$store.dispatch('setInfo', {
+              role: 'student',
+              permissions: '学生'
+            })
+            break
+          }
+          }
           that.$router.push({path: '/'})
         }).catch(res => {
+          console.log(res)
           that.$message({
             showClose: true,
             message: res,
@@ -181,7 +203,7 @@ export default {
         }
         .login-module {
           width: 380px;
-          height: 325px;
+          height: 380px;
           margin-top: 60px;
           border: none;
           position: absolute;
