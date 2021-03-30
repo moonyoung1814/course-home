@@ -6,7 +6,7 @@ import store from '../vuex'
 //  获取角色信息，根据用户权限动态加载路由
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
-  if (store.getters.token && store.getters.info.role) {
+  if (store.getters.token) {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {

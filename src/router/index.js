@@ -7,8 +7,8 @@ import HomeMain from '@/views/index/mainIndex'
 
 // 不是必须加载的组件使用懒加载
 const NotFound = () => import('@/views/page404')
-const pagePermissions = () => import('@/views/permissions/pagePermissions')
-const btnPermissions = () => import('@/views/permissions/btnPermissions')
+// const pagePermissions = () => import('@/views/permissions/pagePermissions')
+// const btnPermissions = () => import('@/views/permissions/btnPermissions')
 
 /**
  * 重写路由的push方法
@@ -58,28 +58,28 @@ let defaultRouter = [
 ]
 
 let addRouter = [
-  {
-    path: '/',
-    iconCls: 'fa fa-universal-access', // 图标样式class
-    name: routeName.permissions,
-    component: Layout,
-    children: [
-      {
-        path: '/pagePermissions',
-        iconCls: 'fa fa-expeditedssl', // 图标样式class
-        name: routeName.pageControl,
-        component: pagePermissions,
-        children: []
-      },
-      {
-        path: '/btnPermissions',
-        iconCls: 'fa fa-toggle-on', // 图标样式class
-        name: routeName.btnControl,
-        component: btnPermissions,
-        children: []
-      }
-    ]
-  },
+  // {
+  //   path: '/',
+  //   iconCls: 'fa fa-universal-access', // 图标样式class
+  //   name: routeName.permissions,
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: '/pagePermissions',
+  //       iconCls: 'fa fa-expeditedssl', // 图标样式class
+  //       name: routeName.pageControl,
+  //       component: pagePermissions,
+  //       children: []
+  //     },
+  //     {
+  //       path: '/btnPermissions',
+  //       iconCls: 'fa fa-toggle-on', // 图标样式class
+  //       name: routeName.btnControl,
+  //       component: btnPermissions,
+  //       children: []
+  //     }
+  //   ]
+  // },
   {
     path: '/',
     iconCls: 'fa fa-universal-access',
