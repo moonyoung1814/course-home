@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "page404",
+  name: 'page404',
   mounted () {
   }
 }

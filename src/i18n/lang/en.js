@@ -16,6 +16,7 @@ const en = {
     btnControl: 'btnControl',
     table: 'table',
     navMenu: 'navMenu',
+    test: 'test',
     courseManage: 'courseManage',
     createDocx: 'createDocx',
     courseInfo: 'courseInfo',

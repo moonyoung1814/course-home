@@ -16,6 +16,7 @@ const cn = {
     btnControl: '按钮权限',
     table: '表格',
     navMenu: '导航菜单',
+    test: '测试',
     courseManage: '课程管理',
     createDocx: '生成教学文档',
     courseInfo: '课程信息',
