@@ -49,21 +49,6 @@ let defaultRouter = [
     ]
   },
   {
-    path: '/',
-    iconCls: 'fa fa-dashboard', // 图标样式class
-    name: '测试',
-    component: Layout,
-    children: [
-      {
-        path: '/test',
-        iconCls: 'fa fa-dashboard',
-        component: () => import('@/views/test.vue'),
-        name: routeName.test,
-        children: []
-      }
-    ]
-  },
-  {
     path: '/404',
     component: NotFound,
     name: '404',

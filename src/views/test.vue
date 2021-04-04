@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="sample-tutorial">
-      <gc-spread-sheets class="sample-spreadsheets" @workbookInitialized="initSpread">
+      <gc-spread-sheets class="sample-spreadsheets" @editChange="handleChange" @workbookInitialized="initSpread">
           <gc-worksheet>
           </gc-worksheet>
       </gc-spread-sheets>
@@ -15,24 +15,20 @@
                       <input style="width: 231px;" id="loadingStatus" type="range" name="points" min="0" max="100" value="0" step="0.01"/>
                   </p>
                   <input type="file" id="fileDemo" class="input" @change="changeFileDemo">
-                  <input type="button" id="loadExcel" value="import" class="button" @click="loadExcel">
+                  <input type="button" id="loadExcel" value="导入文件" class="button" @click="loadExcel">
+                  <p>
+                    只可以导入和模板格式相同的表格，否则会出错
+                  </p>
               </div>
               <div class="inputContainer">
-                  <input id="exportFileName" value="export.xlsx" class="input" @change="changeExportFileName">
-                  <input type="button" id="saveExcel" value="export" class="button" @click="saveExcel">
-              </div>
-          </div>
-          <div class="option-row">
-              <div class="group">
-                  <label>Password:
-                      <input type="password" id="password" @change="changePassword">
-                  </label>
+                  <el-input v-model="exportFileName" placeholder="请输入导出文件名"></el-input>
+                  <input type="button" id="saveExcel" value="导出文件" class="button" @click="saveExcel">
               </div>
           </div>
       </div>
   </div>
+  <input type="file">
   <el-button @click="renderDoc"> 确认 </el-button>
-  <el-button @click="handleClick"> 测试 </el-button>
 </div>
 </template>
 
@@ -47,6 +43,7 @@ import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils/index.js'
 import { saveAs } from 'file-saver'
+import axios from 'axios'
 
 function loadFile (url, callback) {
   PizZipUtils.getBinaryContent(url, callback)
@@ -61,7 +58,7 @@ GC.Spread.Common.CultureManager.culture('zh-cn')
 window.GC = GC
 
 export default({
-  name: 'app',
+  name: 'test',
   data: function () {
     return {
       spread: null,
@@ -70,31 +67,21 @@ export default({
       password: ''
     }
   },
+  created: async function () {
+    this.importExcelFile = (await axios.get('http://template.moonyoung.top/template1.xlsx', {responseType: 'blob'})).data
+    this.loadExcel()
+  },
   methods: {
     initSpread: function (spread) {
       this.spread = spread
       spread.options.calcOnDemand = true
-      let sheet = this.spread.sheets[0]
-      sheet.suspendPaint()
-      sheet.setValue(0, 0, '序号')
-      sheet.setValue(0, 1, '学号')
-      sheet.setValue(0, 2, '姓名')
-      sheet.setValue(0, 3, '团队表现')
-      sheet.setValue(0, 4, '作品')
-      sheet.setValue(0, 5, '答辩')
-      sheet.setValue(0, 6, '文档')
-      sheet.setValue(0, 7, '总评')
-      sheet.resumePaint()
-      // spread.fromJSON(jsonData)
     },
     changeFileDemo (e) {
       this.importExcelFile = e.target.files[0]
+      console.log(this.importExcelFile)
     },
     changePassword (e) {
       this.password = e.target.value
-    },
-    changeExportFileName (e) {
-      this.exportFileName = e.target.value
     },
     changeIncremental (e) {
       document.getElementById('loading-container').style.display = e.target.checked ? 'block' : 'none'
@@ -153,9 +140,28 @@ export default({
         password: password
       })
     },
-    handleClick () {
-      // console.log(this.spread)
-      console.log(this.spread.sheets[1].getValue('4', '3'))
+
+    handleChange (sender, args) {
+      if (args && args.col !== 0) {
+        this.spread.sheets[1].setValue(args.row, 0, args.row)
+      }
+    },
+
+    getExcelData () {
+      let clints = []
+      for (let i = 1; this.spread.sheets[1].getValue(i, 0); i++) {
+        let rowData = {}
+        rowData.number = this.spread.sheets[1].getValue(i, 0)
+        rowData.id = this.spread.sheets[1].getValue(i, 1)
+        rowData.name = this.spread.sheets[1].getValue(i, 2)
+        rowData.a = this.spread.sheets[1].getValue(i, 3)
+        rowData.b = this.spread.sheets[1].getValue(i, 4)
+        rowData.c = this.spread.sheets[1].getValue(i, 5)
+        rowData.d = this.spread.sheets[1].getValue(i, 6)
+        rowData.total = this.spread.sheets[1].getValue(i, 7)
+        clints.push(rowData)
+      }
+      return clints
     },
 
     renderDoc () {
@@ -168,28 +174,7 @@ export default({
           var zip = new PizZip(content)
           var doc = new Docxtemplater().loadZip(zip)
           doc.setData({
-            clints: [
-              {
-                number: 1,
-                id: this.spread.sheets[1].getValue('4', '0'),
-                name: this.spread.sheets[1].getValue('4', '2'),
-                a: this.spread.sheets[1].getValue('4', '10'),
-                b: this.spread.sheets[1].getValue('4', '11'),
-                c: this.spread.sheets[1].getValue('4', '12'),
-                d: this.spread.sheets[1].getValue('4', '13'),
-                total: this.spread.sheets[1].getValue('4', '14')
-              },
-              {
-                number: 2,
-                id: this.spread.sheets[1].getValue('5', '0'),
-                name: this.spread.sheets[1].getValue('5', '2'),
-                a: this.spread.sheets[1].getValue('5', '10'),
-                b: this.spread.sheets[1].getValue('5', '11'),
-                c: this.spread.sheets[1].getValue('5', '12'),
-                d: this.spread.sheets[1].getValue('5', '13'),
-                total: this.spread.sheets[1].getValue('5', '14')
-              }
-            ]
+            clints: this.getExcelData()
           })
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -261,7 +246,7 @@ export default({
 
 .input {
   font-size: 14px;
-  height: 20px;
+  height: 30px;
   border: 0;
   outline: none;
   background: transparent;

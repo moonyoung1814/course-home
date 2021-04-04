@@ -1,49 +1,78 @@
 <template>
-  <div class="form">
-    <el-form ref="form" label-position="left" label-width="120px" >
-      <el-form-item label="教师姓名">
-        <el-input v-model="teacherName"/>
-      </el-form-item>
-      <el-form-item label="课程名">
-        <el-input v-model="courseName" />
-      </el-form-item>
-      <el-form-item label="课程号">
-        <el-input v-model="courseCode" />
-      </el-form-item>
-      <el-form-item label="课程性质">
-        <el-input v-model="nature" />
-      </el-form-item>
-      <el-form-item label="学分">
-        <el-input v-model="credit" />
-      </el-form-item>
-      <el-form-item label="总学时">
-        <el-input v-model="totalHours" />
-      </el-form-item>
-      <el-form-item label="参考书目">
-        <el-input v-model="resource" />
-      </el-form-item>
-      <el-form-item label="考核方式">
-        <el-input v-model="assessment" />
-      </el-form-item>
-      <el-form-item label="讲授学时">
-        <el-input v-model="teachHours" />
-      </el-form-item>
-      <el-form-item label="实验学时">
-        <el-input v-model="experHours" />
-      </el-form-item>
-      <el-form-item label="上机学时">
-        <el-input v-model="operateHours" />
-      </el-form-item>
-      <el-form-item label="课程实践学时">
-        <el-input v-model="practiceHours" />
-      </el-form-item>
-      <el-form-item label="自学学时">
-        <el-input v-model="selfStudyHours" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="renderDoc">确认</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <div class="form">
+      <el-form ref="form" label-position="left" label-width="120px" >
+        <el-form-item label="教师姓名">
+          <el-input v-model="teacherName"/>
+        </el-form-item>
+        <el-form-item label="课程名">
+          <el-input v-model="courseName" />
+        </el-form-item>
+        <el-form-item label="课程号">
+          <el-input v-model="courseCode" />
+        </el-form-item>
+        <el-form-item label="课程性质">
+          <el-input v-model="nature" />
+        </el-form-item>
+        <el-form-item label="学分">
+          <el-input v-model="credit" />
+        </el-form-item>
+        <el-form-item label="总学时">
+          <el-input v-model="totalHours" />
+        </el-form-item>
+        <el-form-item label="参考书目">
+          <el-input v-model="resource" />
+        </el-form-item>
+        <el-form-item label="考核方式">
+          <el-input v-model="assessment" />
+        </el-form-item>
+        <el-form-item label="讲授学时">
+          <el-input v-model="teachHours" />
+        </el-form-item>
+        <el-form-item label="实验学时">
+          <el-input v-model="experHours" />
+        </el-form-item>
+        <el-form-item label="上机学时">
+          <el-input v-model="operateHours" />
+        </el-form-item>
+        <el-form-item label="课程实践学时">
+          <el-input v-model="practiceHours" />
+        </el-form-item>
+        <el-form-item label="自学学时">
+          <el-input v-model="selfStudyHours" />
+        </el-form-item>
+      </el-form>
+    </div>
+    <div>
+      <div class="sample-tutorial">
+          <gc-spread-sheets class="sample-spreadsheets" @editChange="handleChange" @workbookInitialized="initSpread">
+              <gc-worksheet>
+              </gc-worksheet>
+          </gc-spread-sheets>
+          <div class="options-container">
+              <div class="option-row">
+                  <div class="inputContainer">
+                      <input type="checkbox" id="incremental" @change="changeIncremental" checked/>
+                      <label for="incremental">Incremental Loading</label>
+                      <p class="summary" id="loading-container">
+                          Loading progress:
+                          <input style="width: 231px;" id="loadingStatus" type="range" name="points" min="0" max="100" value="0" step="0.01"/>
+                      </p>
+                      <input type="file" id="fileDemo" class="input" @change="changeFileDemo">
+                      <input type="button" id="loadExcel" value="导入文件" class="button" @click="loadExcel">
+                      <p>
+                        只可以导入和模板格式相同的表格，否则会出错
+                      </p>
+                  </div>
+                  <div class="inputContainer">
+                      <el-input v-model="exportFileName" placeholder="请输入导出文件名"></el-input>
+                      <input type="button" id="saveExcel" value="导出文件" class="button" @click="saveExcel">
+                  </div>
+              </div>
+          </div>
+      </div>
+      <el-button @click="renderDoc" type="primary" class="confirm"> 确认 </el-button>
+    </div>
   </div>
 </template>
 
@@ -52,15 +81,31 @@ import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils/index.js'
 import { saveAs } from 'file-saver'
+import '@grapecity/spread-sheets-resources-zh'
+import '@grapecity/spread-sheets-vue'
+import GC from '@grapecity/spread-sheets'
+import '@grapecity/spread-sheets-charts'
+import { IO } from '@grapecity/spread-excelio'
+import saveExcel from '@/utils/saveFile'
+import axios from 'axios'
 
 function loadFile (url, callback) {
   PizZipUtils.getBinaryContent(url, callback)
 }
 
+GC.Spread.Common.CultureManager.culture('zh-cn')
+
+window.GC = GC
+
 export default {
   data () {
     return {
-      teacherName: '123',
+      spread: null,
+      importExcelFile: null,
+      exportFileName: 'export.xlsx',
+      password: '',
+
+      teacherName: '',
       courseName: '', // 课程名
       courseCode: '', // 课程号
       nature: '', // 课程性质
@@ -76,13 +121,110 @@ export default {
       selfStudyHours: '' // 自学学时
     }
   },
-  created () { },
+  created: async function () {
+    this.importExcelFile = (await axios.get('http://template.moonyoung.top/template1.xlsx', {responseType: 'blob'})).data
+    this.loadExcel()
+    // let sheet = this.spread.getActiveSheet()
+    // sheet.setRowCount(150)
+  },
   methods: {
     getDate () {
       let date = new Date()
       return (
         date.getFullYear() + '.' + (date.getMonth() + 1) + '.' + date.getDate()
       )
+    },
+
+    initSpread: function (spread) {
+      this.spread = spread
+      spread.options.calcOnDemand = true
+    },
+    changeFileDemo (e) {
+      this.importExcelFile = e.target.files[0]
+      console.log(this.importExcelFile)
+    },
+    changePassword (e) {
+      this.password = e.target.value
+    },
+    changeIncremental (e) {
+      document.getElementById('loading-container').style.display = e.target.checked ? 'block' : 'none'
+    },
+    loadExcel (e) {
+      let spread = this.spread
+      let excelIo = new IO()
+      let excelFile = this.importExcelFile
+      let password = this.password
+
+      let incrementalEle = document.getElementById('incremental')
+      let loadingStatus = document.getElementById('loadingStatus')
+      // here is excel IO API
+      excelIo.open(excelFile, function (json) {
+        let workbookObj = json
+        if (incrementalEle.checked) {
+          spread.fromJSON(workbookObj, {
+            incrementalLoading: {
+              loading: function (progress) {
+                progress = progress * 100
+                loadingStatus.value = progress
+              },
+              loaded: function () {
+              }
+            }
+          })
+        } else {
+          spread.fromJSON(workbookObj)
+        }
+      }, function (e) {
+        // process error
+        alert(e.errorMessage)
+      }, {
+        password: password
+      })
+    },
+    saveExcel (e) {
+      let spread = this.spread
+      let excelIo = new IO()
+
+      let fileName = this.exportFileName
+      let password = this.password
+      if (fileName.substr(-5, 5) !== '.xlsx') {
+        fileName += '.xlsx'
+      }
+
+      let json = spread.toJSON()
+
+      // here is excel IO API
+      excelIo.save(json, function (blob) {
+        saveExcel(blob, fileName)
+      }, function (e) {
+        // process error
+        console.log(e)
+      }, {
+        password: password
+      })
+    },
+
+    handleChange (sender, args) {
+      if (args && args.col !== 0) {
+        this.spread.sheets[1].setValue(args.row, 0, args.row)
+      }
+    },
+
+    getExcelData () {
+      let clints = []
+      for (let i = 1; this.spread.sheets[1].getValue(i, 0); i++) {
+        let rowData = {}
+        rowData.number = this.spread.sheets[1].getValue(i, 0)
+        rowData.id = this.spread.sheets[1].getValue(i, 1)
+        rowData.name = this.spread.sheets[1].getValue(i, 2)
+        rowData.a = this.spread.sheets[1].getValue(i, 3)
+        rowData.b = this.spread.sheets[1].getValue(i, 4)
+        rowData.c = this.spread.sheets[1].getValue(i, 5)
+        rowData.d = this.spread.sheets[1].getValue(i, 6)
+        rowData.total = this.spread.sheets[1].getValue(i, 7)
+        clints.push(rowData)
+      }
+      return clints
     },
 
     renderDoc () {
@@ -108,12 +250,8 @@ export default {
             experHours: this.experHours,
             operateHours: this.operateHours,
             practiceHours: this.practiceHours,
-            selfStudyHours: this.selfStudyHours
-            // name: '王沐阳'
-            // first_name: "John",
-            // last_name: "Doe",
-            // phone: "0652455478",
-            // description: "New Website"
+            selfStudyHours: this.selfStudyHours,
+            clints: this.getExcelData()
           })
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -145,5 +283,74 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.sample-tutorial {
+   position: relative;
+   height: 500px;
+   overflow: hidden;
+}
+
+.sample-spreadsheets {
+  width: calc(100% - 280px);
+  height: 100%;
+  overflow: hidden;
+  float: left;
+}
+
+.options-container {
+  float: right;
+  width: 280px;
+  padding: 12px;
+  height: 100%;
+  box-sizing: border-box;
+  background: #fbfbfb;
+  overflow: auto;
+}
+
+.sample-options {
+  z-index: 1000;
+}
+
+.inputContainer {
+  width: 100%;
+  height: auto;
+  border: 1px solid #eee;
+  padding: 6px 12px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.input {
+  font-size: 14px;
+  height: 30px;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+
+.button {
+  height: 30px;
+  padding: 6px 12px;
+  width: 80px;
+  margin-top: 6px;
+}
+
+.group {
+  padding: 12px;
+}
+
+.group input {
+  padding: 4px 12px;
+}
+
+.confirm {
+  margin-top: 20px;
+}
+body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 </style>
