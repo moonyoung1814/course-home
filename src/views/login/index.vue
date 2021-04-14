@@ -8,7 +8,7 @@
       </div>
       <div class="loginBox">
         <div class="loginCon">
-          <p class="title">vue-xuadmin权限管理后台模板</p>
+          <p class="title">创新实践个人空间</p>
           <p class="title">前台: vue + element-ui</p>
           <el-card shadow="always" class="login-module" v-if="smdl">
             <div slot="header" class="clearfix formTitlt">
@@ -28,10 +28,6 @@
               </el-form-item>
               <el-form-item>
                 <el-button class="subBtn" type="primary" @click="submitForm">登录</el-button>
-              </el-form-item>
-              <el-form-item>
-                  <el-radio v-model="radio" label="teacher">老师</el-radio>
-                  <el-radio v-model="radio" label="student">学生</el-radio>
               </el-form-item>
               <p class="smalltxt">
                 <router-link class="a" to="#">忘记密码</router-link>
@@ -68,6 +64,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -75,13 +72,11 @@ export default {
       loginForm: {
         username: 'vue-xuadmin',
         password: '123456'
-      },
-      radio: 'teacher'
+      }
     }
   },
   methods: {
-    submitForm () {
-      let that = this
+    async submitForm () {
       if (this.loginForm.username === '' || this.loginForm.password === '') {
         this.$message({
           showClose: true,
@@ -105,45 +100,58 @@ export default {
         // })
 
         // 将 username 设置为 token 存储在 store，仅为测试效果，实际存储 token 以后台返回为准
-        that.$store.dispatch('setToken', that.loginForm.username).then(async () => {
-          switch (this.radio) {
-          case 'teacher': {
-            await that.$store.dispatch('setInfo', {
-              role: 'teacher',
-              permissions: '教师'
-            })
-            break
-          }
-          case 'student': {
-            await that.$store.dispatch('setInfo', {
-              role: 'student',
-              permissions: '学生'
-            })
-            break
-          }
-          }
-          that.$router.push({path: '/'})
-        }).catch(res => {
+        axios.post('http://47.94.168.183:7002/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
+          console.log('succeed')
           console.log(res)
-          that.$message({
-            showClose: true,
-            message: res,
-            type: 'error'
-          })
+          try {
+            await this.$store.dispatch('setToken', res.data.token)
+            switch (res.data.role) {
+            case '导师': {
+              await this.$store.dispatch('setInfo', {role: 'teacher'})
+              break
+            }
+            case '学生': {
+              await this.$$store.dispatch('setInfo', {role: 'student'})
+              break
+            }
+            }
+            this.$router.push({path: '/'})
+          } catch (err) {
+            console.log(err)
+            this.$message('出错了，请稍后再试')
+          }
+        }).catch(err => {
+          this.$message('账号或用户名错误！')
+          console.log(err)
         })
+        // that.$store.dispatch('setToken', that.loginForm.username).then(async () => {
+        //   switch (this.radio) {
+        //   case 'teacher': {
+        //     await that.$store.dispatch('setInfo', {
+        //       role: 'teacher',
+        //       permissions: '教师'
+        //     })
+        //     break
+        //   }
+        //   case 'student': {
+        //     await that.$store.dispatch('setInfo', {
+        //       role: 'student',
+        //       permissions: '学生'
+        //     })
+        //     break
+        //   }
+        //   }
+        //   that.$router.push({path: '/'})
+        // }).catch(res => {
+        //   console.log(res)
+        //   that.$message({
+        //     showClose: true,
+        //     message: res,
+        //     type: 'error'
+        //   })
+        // })
       }
-    },
-    message () {
-      const h = this.$createElement
-      this.$notify({
-        title: '账号密码',
-        message: h('i', {style: 'color: teal'}, '账号密码可以随意填写，为了测试效果填写的账号将会被存储为临时假 token'),
-        duration: 6000
-      })
     }
-  },
-  mounted () {
-    this.message()
   }
 }
 </script>
@@ -203,7 +211,7 @@ export default {
         }
         .login-module {
           width: 380px;
-          height: 380px;
+          height: 300px;
           margin-top: 60px;
           border: none;
           position: absolute;

@@ -23,7 +23,7 @@ export default {
     setRole (state, options) { // 切换角色，测试权限管理
       state.info = {
         role: options.role,
-        permissions: options.permissions
+        permissions: options.permissions || ''
       }
       localStorage.setItem('info', JSON.stringify(store.getters.info))
       store.dispatch('newRoutes', options.role)

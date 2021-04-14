@@ -16,9 +16,12 @@ axios.defaults.baseURL = process.env.API_HOST
 axios.interceptors.request.use(config => {
   NProgress.start()
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-  if (Cookies.get('access_token')) {
-    config.headers.Authorization = 'Bearer' + Cookies.get('access_token')
+  if (localStorage.getItem('token')) {
+    config.headers.Authorization = 'Bearer ' + localStorage.getItem('token')
   }
+  // if (Cookies.get('access_token')) {
+  //   config.headers.Authorization = 'Bearer' + Cookies.get('access_token')
+  // }
   return config
 },
 error => {

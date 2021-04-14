@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="form">
-      <el-form ref="form" label-position="left" label-width="120px" >
+      <el-form ref="form" label-position="left" label-width="120px">
         <el-form-item label="教师姓名">
-          <el-input v-model="teacherName"/>
+          <el-input v-model="teacherName" />
         </el-form-item>
         <el-form-item label="课程名">
           <el-input v-model="courseName" />
@@ -43,35 +43,77 @@
         </el-form-item>
       </el-form>
     </div>
+    <el-table :data="clints" style="width: 100%" border>
+      <el-table-column type="index" width="50">
+      </el-table-column>
+      <el-table-column prop="id" label="学号" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.id">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.name">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="a" label="团队表现" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.a">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="b" label="作品" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.b">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="c" label="答辩" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.c">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="d" label="文档" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.d">
+        </el-input>
+      </template>
+      </el-table-column>
+      <el-table-column prop="total" label="总评" width="180">
+        <template slot-scope="scope">
+        <el-input v-model="scope.row.total">
+        </el-input>
+      </template>
+      </el-table-column>
+    </el-table>
     <div>
-      <div class="sample-tutorial">
-          <gc-spread-sheets class="sample-spreadsheets" @editChange="handleChange" @workbookInitialized="initSpread">
-              <gc-worksheet>
-              </gc-worksheet>
-          </gc-spread-sheets>
-          <div class="options-container">
-              <div class="option-row">
-                  <div class="inputContainer">
-                      <input type="checkbox" id="incremental" @change="changeIncremental" checked/>
-                      <label for="incremental">Incremental Loading</label>
-                      <p class="summary" id="loading-container">
-                          Loading progress:
-                          <input style="width: 231px;" id="loadingStatus" type="range" name="points" min="0" max="100" value="0" step="0.01"/>
-                      </p>
-                      <input type="file" id="fileDemo" class="input" @change="changeFileDemo">
-                      <input type="button" id="loadExcel" value="导入文件" class="button" @click="loadExcel">
-                      <p>
-                        只可以导入和模板格式相同的表格，否则会出错
-                      </p>
-                  </div>
-                  <div class="inputContainer">
-                      <el-input v-model="exportFileName" placeholder="请输入导出文件名"></el-input>
-                      <input type="button" id="saveExcel" value="导出文件" class="button" @click="saveExcel">
-                  </div>
-              </div>
-          </div>
-      </div>
-      <el-button @click="renderDoc" type="primary" class="confirm"> 确认 </el-button>
+      <el-button @click="handleAdd" type="primary" class="confirm">
+        添加一行
+      </el-button>
+      <el-button @click="handleDelete" type="primary" class="confirm">
+        删除一行
+      </el-button>
+      <el-button @click="handleExport" type="primary" class="confirm">
+        导出表格
+      </el-button>
+      <el-upload
+        class="confirm"
+        action=""
+        :on-change="handleChange"
+        :on-remove="handleRemove"
+        :on-exceed="handleExceed"
+        :limit="limitUpload"
+        accept="application/vnd.openxmlformats-
+        officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx"
+        :auto-upload="false">
+          <el-button size="small" type="primary">上传成绩册</el-button>
+      </el-upload>
+      <el-button @click="renderDoc" type="primary" class="confirm">
+        确认
+      </el-button>
     </div>
   </div>
 </template>
@@ -81,25 +123,16 @@ import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils/index.js'
 import { saveAs } from 'file-saver'
-import '@grapecity/spread-sheets-resources-zh'
-import '@grapecity/spread-sheets-vue'
-import GC from '@grapecity/spread-sheets'
-import '@grapecity/spread-sheets-charts'
-import { IO } from '@grapecity/spread-excelio'
-import saveExcel from '@/utils/saveFile'
-import axios from 'axios'
 
 function loadFile (url, callback) {
   PizZipUtils.getBinaryContent(url, callback)
 }
 
-GC.Spread.Common.CultureManager.culture('zh-cn')
-
-window.GC = GC
-
 export default {
   data () {
     return {
+      limitUpload: 1,
+      filetemp: '',
       spread: null,
       importExcelFile: null,
       exportFileName: 'export.xlsx',
@@ -118,115 +151,50 @@ export default {
       experHours: '', // 实验学时
       operateHours: '', // 上机学时
       practiceHours: '', // 课程实践学时
-      selfStudyHours: '' // 自学学时
+      selfStudyHours: '', // 自学学时
+
+      clints: [{
+        number: '1',
+        id: '',
+        name: '',
+        a: '',
+        b: '',
+        c: '',
+        d: '',
+        total: ''
+      }, {
+        number: '2',
+        id: '',
+        name: '',
+        a: '',
+        b: '',
+        c: '',
+        d: '',
+        total: ''
+      }, {
+        number: '3',
+        id: '',
+        name: '',
+        a: '',
+        b: '',
+        c: '',
+        d: '',
+        total: ''
+      }, {
+        number: '4',
+        id: '',
+        name: '',
+        a: '',
+        b: '',
+        c: '',
+        d: '',
+        total: ''
+      }]
     }
   },
-  created: async function () {
-    this.importExcelFile = (await axios.get('http://template.moonyoung.top/template1.xlsx', {responseType: 'blob'})).data
-    this.loadExcel()
-    // let sheet = this.spread.getActiveSheet()
-    // sheet.setRowCount(150)
+  created () {
   },
   methods: {
-    getDate () {
-      let date = new Date()
-      return (
-        date.getFullYear() + '.' + (date.getMonth() + 1) + '.' + date.getDate()
-      )
-    },
-
-    initSpread: function (spread) {
-      this.spread = spread
-      spread.options.calcOnDemand = true
-    },
-    changeFileDemo (e) {
-      this.importExcelFile = e.target.files[0]
-      console.log(this.importExcelFile)
-    },
-    changePassword (e) {
-      this.password = e.target.value
-    },
-    changeIncremental (e) {
-      document.getElementById('loading-container').style.display = e.target.checked ? 'block' : 'none'
-    },
-    loadExcel (e) {
-      let spread = this.spread
-      let excelIo = new IO()
-      let excelFile = this.importExcelFile
-      let password = this.password
-
-      let incrementalEle = document.getElementById('incremental')
-      let loadingStatus = document.getElementById('loadingStatus')
-      // here is excel IO API
-      excelIo.open(excelFile, function (json) {
-        let workbookObj = json
-        if (incrementalEle.checked) {
-          spread.fromJSON(workbookObj, {
-            incrementalLoading: {
-              loading: function (progress) {
-                progress = progress * 100
-                loadingStatus.value = progress
-              },
-              loaded: function () {
-              }
-            }
-          })
-        } else {
-          spread.fromJSON(workbookObj)
-        }
-      }, function (e) {
-        // process error
-        alert(e.errorMessage)
-      }, {
-        password: password
-      })
-    },
-    saveExcel (e) {
-      let spread = this.spread
-      let excelIo = new IO()
-
-      let fileName = this.exportFileName
-      let password = this.password
-      if (fileName.substr(-5, 5) !== '.xlsx') {
-        fileName += '.xlsx'
-      }
-
-      let json = spread.toJSON()
-
-      // here is excel IO API
-      excelIo.save(json, function (blob) {
-        saveExcel(blob, fileName)
-      }, function (e) {
-        // process error
-        console.log(e)
-      }, {
-        password: password
-      })
-    },
-
-    handleChange (sender, args) {
-      if (args && args.col !== 0) {
-        this.spread.sheets[1].setValue(args.row, 0, args.row)
-      }
-    },
-
-    getExcelData () {
-      let clints = []
-      for (let i = 1; this.spread.sheets[1].getValue(i, 0); i++) {
-        let rowData = {}
-        rowData.number = this.spread.sheets[1].getValue(i, 0)
-        rowData.id = this.spread.sheets[1].getValue(i, 1)
-        rowData.name = this.spread.sheets[1].getValue(i, 2)
-        rowData.a = this.spread.sheets[1].getValue(i, 3)
-        rowData.b = this.spread.sheets[1].getValue(i, 4)
-        rowData.c = this.spread.sheets[1].getValue(i, 5)
-        rowData.d = this.spread.sheets[1].getValue(i, 6)
-        rowData.total = this.spread.sheets[1].getValue(i, 7)
-        clints.push(rowData)
-      }
-      return clints
-    },
-
     renderDoc () {
       loadFile(
         'http://template.moonyoung.top/course-template.docx',
@@ -251,7 +219,7 @@ export default {
             operateHours: this.operateHours,
             practiceHours: this.practiceHours,
             selfStudyHours: this.selfStudyHours,
-            clints: this.getExcelData()
+            clints: this.clints
           })
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -278,79 +246,150 @@ export default {
           saveAs(out, 'output.docx')
         }
       )
+    },
+    getDate () {
+      let date = new Date()
+      return date.getFullYear().toString() + '.' + (date.getMonth() + 1).toString() + '.' + date.getDate().toString()
+    },
+    handleAdd () {
+      this.clints.push({
+        id: '',
+        name: '',
+        a: '',
+        b: '',
+        c: '',
+        d: '',
+        total: ''
+      })
+    },
+    handleDelete () {
+      this.clints.pop()
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    handleExport () {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('../../vendor/Export2Excel')
+        const tHeader = ['学号', '姓名', '团队表现', '作品', '答辩', '文档', '总评']
+        const filterVal = ['id', 'name', 'a', 'b', 'c', 'd', 'total']
+        const list = this.clints
+        const data = this.formatJson(filterVal, list)
+        console.log(data)
+        export_json_to_excel(tHeader, data, '学生成绩册')
+      })
+    },
+    // 上传文件时处理方法
+    handleChange (file, fileList) {
+      this.fileTemp = file.raw
+      if (this.fileTemp) {
+        if ((this.fileTemp.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') ||
+                    (this.fileTemp.type === 'application/vnd.ms-excel')) {
+          this.importfxx(this.fileTemp)
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '附件格式错误，请删除后重新上传！'
+          })
+        }
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请上传附件！'
+        })
+      }
+    },
+    // 超出最大上传文件数量时的处理方法
+    handleExceed () {
+      this.$message({
+        type: 'warning',
+        message: '超出最大上传文件数量的限制！'
+      })
+    },
+    // 移除文件的操作方法
+    handleRemove (file, fileList) {
+      this.fileTemp = null
+    },
+    importfxx (obj) {
+      // let inputDOM = this.$refs.inputer
+      // 通过DOM取文件数据
+      let that = this
+
+      this.filetemp = event.currentTarget.files[0]
+
+      var rABS = false // 是否将文件读取为二进制字符串
+      var f = this.filetemp
+
+      var reader = new FileReader()
+      // if (!FileReader.prototype.readAsBinaryString) {
+      FileReader.prototype.readAsBinaryString = function (f) {
+        var binary = ''
+        var rABS = false // 是否将文件读取为二进制字符串
+        var wb // 读取完成的数据
+        var outdata
+        var reader = new FileReader()
+        reader.onload = function (e) {
+          var bytes = new Uint8Array(reader.result)
+          var length = bytes.byteLength
+          for (var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i])
+          }
+          // 此处引入，用于解析excel
+          var XLSX = require('xlsx')
+          if (rABS) {
+            wb = XLSX.read(btoa(fixdata(binary)), {
+              // 手动转化
+              type: 'base64'
+            })
+          } else {
+            wb = XLSX.read(binary, {
+              type: 'binary'
+            })
+          }
+          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+          console.log(outdata)
+          that.clints = outdata.map((value, index) => {
+            return {
+              number: index + 1,
+              id: value['学号'],
+              name: value['姓名'],
+              a: value['团队表现'],
+              b: value['作品'],
+              c: value['答辩'],
+              d: value['文档'],
+              total: value['总评']
+            }
+          })
+          // outdata就是读取的数据（不包含标题行即表头，表头会作为对象的下标）
+          // 此处可对数据进行处理
+          // let arr = [];
+          // outdata.map(v => {
+          //     let obj = {}
+          //     obj.code = v['Code']
+          //     obj.name = v['Name']
+          //     obj.pro = v['province']
+          //     obj.cit = v['city']
+          //     obj.dis = v['district']
+          //     arr.push(obj)
+          // });
+          // _this.da=arr;
+          // _this.dalen=arr.length;
+          // return arr
+        }
+        reader.readAsArrayBuffer(f)
+      }
+      if (rABS) {
+        reader.readAsArrayBuffer(f)
+      } else {
+        reader.readAsBinaryString(f)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.sample-tutorial {
-   position: relative;
-   height: 500px;
-   overflow: hidden;
-}
-
-.sample-spreadsheets {
-  width: calc(100% - 280px);
-  height: 100%;
-  overflow: hidden;
-  float: left;
-}
-
-.options-container {
-  float: right;
-  width: 280px;
-  padding: 12px;
-  height: 100%;
-  box-sizing: border-box;
-  background: #fbfbfb;
-  overflow: auto;
-}
-
-.sample-options {
-  z-index: 1000;
-}
-
-.inputContainer {
-  width: 100%;
-  height: auto;
-  border: 1px solid #eee;
-  padding: 6px 12px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-}
-
-.input {
-  font-size: 14px;
-  height: 30px;
-  border: 0;
-  outline: none;
-  background: transparent;
-}
-
-.button {
-  height: 30px;
-  padding: 6px 12px;
-  width: 80px;
-  margin-top: 6px;
-}
-
-.group {
-  padding: 12px;
-}
-
-.group input {
-  padding: 4px 12px;
-}
-
 .confirm {
   margin-top: 20px;
-}
-body {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
 }
 </style>

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Cookies from 'js-cookie'
 import routerData from './modules/routerData'
 import role from './modules/role'
 import layout from './modules/layout/index'
@@ -9,12 +8,13 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    token: Cookies.get('token')
+    token: localStorage.getItem('token') || ''
   },
   mutations: {
     setToken (state, token) {
       state.token = token
-      Cookies.set('token', token, { expires: 1 / 24 })
+      localStorage.setItem('token', token)
+      // Cookies.set('token', token, { expires: 1 / 24 })
     }
   },
   actions: {
