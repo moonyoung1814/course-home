@@ -70,7 +70,7 @@ export default {
     return {
       smdl: true,
       loginForm: {
-        username: 'vue-xuadmin',
+        username: 'teacher',
         password: '123456'
       }
     }
@@ -111,7 +111,7 @@ export default {
               break
             }
             case '学生': {
-              await this.$$store.dispatch('setInfo', {role: 'student'})
+              await this.$store.dispatch('setInfo', {role: 'student'})
               break
             }
             }

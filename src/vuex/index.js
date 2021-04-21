@@ -15,12 +15,22 @@ const store = new Vuex.Store({
       state.token = token
       localStorage.setItem('token', token)
       // Cookies.set('token', token, { expires: 1 / 24 })
+    },
+    deleteToken (state) {
+      state.token = ''
+      localStorage.removeItem('token')
     }
   },
   actions: {
     setToken ({commit}, token) {
       return new Promise((resolve, reject) => {
         commit('setToken', token)
+        resolve()
+      })
+    },
+    deleteToken ({commit}) {
+      return new Promise((resolve, reject) => {
+        commit('deleteToken')
         resolve()
       })
     }

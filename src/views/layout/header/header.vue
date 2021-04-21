@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
 import langSelect from '../../../components/lang/langSelect'
 import tabNav from './tabNav'
 import UserInfo from '../../../components/userForm/userInfo'
@@ -96,7 +95,7 @@ export default {
       } else if (command === 'editPassword') {
         this.dialogPassVisible = true
       } else if (command === 'logout') {
-        Cookies.remove('token')
+        this.$store.dispatch('deleteToken')
         location.reload()
       }
     }
