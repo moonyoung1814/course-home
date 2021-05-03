@@ -49,6 +49,21 @@ let defaultRouter = [
     ]
   },
   {
+    path: '/',
+    iconCls: 'fa fa-dashboard',
+    name: routeName.testoss,
+    component: Layout,
+    children: [
+      {
+        path: '/testoss',
+        iconCls: 'fa fa-dashboard',
+        name: routeName.testoss,
+        component: () => import('@/views/testoss.vue'),
+        children: []
+      }
+    ]
+  },
+  {
     path: '/404',
     component: NotFound,
     name: '404',

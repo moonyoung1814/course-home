@@ -16,6 +16,7 @@ import '@/assets/iconfont/iconfont.css'
 import 'font-awesome/css/font-awesome.css'
 import '@/router/permission'
 
+
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(globalPlugin)

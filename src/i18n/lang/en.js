@@ -23,7 +23,8 @@ const en = {
     courseApply: 'courseApply',
     infoManage: 'infoManage',
     studentInfo: 'studentInfo',
-    teacherInfo: 'teacherInfo'
+    teacherInfo: 'teacherInfo',
+    testoss: 'testoss'
   },
   rightMenu: {
     close: 'close',

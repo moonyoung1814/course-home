@@ -65,6 +65,7 @@
 </template>
 <script>
 import axios from 'axios'
+// import Cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -99,8 +100,8 @@ export default {
         //   console.log(err)
         // })
 
-        // 将 username 设置为 token 存储在 store，仅为测试效果，实际存储 token 以后台返回为准
-        axios.post('http://47.94.168.183:7002/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
+        axios.post('http://api.moonyoung.top/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
+        // axios.post('http://localhost:7001/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
           console.log('succeed')
           console.log(res)
           try {

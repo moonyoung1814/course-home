@@ -23,7 +23,8 @@ const cn = {
     courseApply: '入班申请',
     infoManage: '个人信息管理',
     studentInfo: '学生个人信息',
-    teacherInfo: '教师个人信息'
+    teacherInfo: '教师个人信息',
+    testoss: 'oss测试'
   },
   rightMenu: {
     close: '关闭',

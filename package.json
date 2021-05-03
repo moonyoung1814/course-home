@@ -30,6 +30,7 @@
     "@grapecity/spread-sheets-resources-zh": "latest",
     "@grapecity/spread-sheets-shapes": "latest",
     "@grapecity/spread-sheets-vue": "latest",
+    "ali-oss": "^6.15.2",
     "axios": "^0.19.2",
     "docxtemplater": "^3.21.1",
     "echarts": "^4.1.0",

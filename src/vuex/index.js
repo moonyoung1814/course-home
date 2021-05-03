@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import routerData from './modules/routerData'
 import role from './modules/role'
 import layout from './modules/layout/index'
+import Cookies from 'js-cookie'
 
 Vue.use(Vuex)
 
@@ -13,12 +14,13 @@ const store = new Vuex.Store({
   mutations: {
     setToken (state, token) {
       state.token = token
+      Cookies.set('token', token, {expires: 7, domain: '.moonyoung.top'})
       localStorage.setItem('token', token)
-      // Cookies.set('token', token, { expires: 1 / 24 })
     },
     deleteToken (state) {
       state.token = ''
       localStorage.removeItem('token')
+      Cookies.remove('token')
     }
   },
   actions: {
