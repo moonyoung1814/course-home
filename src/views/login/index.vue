@@ -105,8 +105,8 @@ export default {
           console.log('succeed')
           console.log(res)
           try {
-            await this.$store.dispatch('setToken', res.data.token)
-            switch (res.data.role) {
+            await this.$store.dispatch('setToken', res.data.data.token)
+            switch (res.data.data.role) {
             case '导师': {
               await this.$store.dispatch('setInfo', {role: 'teacher'})
               break
