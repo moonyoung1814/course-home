@@ -99,20 +99,19 @@ export default {
         // }).catch((err) => {
         //   console.log(err)
         // })
-
-        axios.post('http://api.moonyoung.top/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
-        // axios.post('http://localhost:7001/api/account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
-          console.log('succeed')
+        console.log(process.env.API_HOST)
+        axios.post('account/login', {username: this.loginForm.username, password: this.loginForm.password}).then(async (res) => {
           console.log(res)
+          let person = res.data.data
           try {
-            await this.$store.dispatch('setToken', res.data.data.token)
+            await this.$store.dispatch('setToken', person.token)
             switch (res.data.data.role) {
             case '导师': {
-              await this.$store.dispatch('setInfo', {role: 'teacher'})
+              await this.$store.dispatch('setInfo', {role: 'teacher', name: person.name, image: person.image})
               break
             }
             case '学生': {
-              await this.$store.dispatch('setInfo', {role: 'student'})
+              await this.$store.dispatch('setInfo', {role: 'student', name: person.name, image: person.image})
               break
             }
             }
