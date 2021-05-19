@@ -20,9 +20,6 @@
         <el-form-item label="总学时">
           <el-input v-model="totalHours" />
         </el-form-item>
-        <el-form-item label="参考书目">
-          <el-input v-model="resource" />
-        </el-form-item>
         <el-form-item label="考核方式">
           <el-input v-model="assessment" />
         </el-form-item>
@@ -40,6 +37,42 @@
         </el-form-item>
         <el-form-item label="自学学时">
           <el-input v-model="selfStudyHours" />
+        </el-form-item>
+        <el-form-item label="课程实例名">
+          <el-input v-model="courseInfoName" />
+        </el-form-item>
+        <el-form-item label="学期">
+          <el-input v-model="semeter" />
+        </el-form-item>
+        <el-form-item label="上课星期">
+          <el-input v-model="weekday" />
+        </el-form-item>
+        <el-form-item label="上课时间">
+          <el-time-select
+            placeholder="起始时间"
+            v-model="startTime"
+            :picker-options="{
+              start: '08:05',
+              step: '00:05',
+              end: '20:10'
+            }">
+          </el-time-select>
+          <el-time-select
+            placeholder="结束时间"
+            v-model="endTime"
+            :picker-options="{
+              start: '08:50',
+              step: '00:05',
+              end: '20:55',
+              minTime: startTime
+            }">
+          </el-time-select>
+        </el-form-item>
+        <el-form-item label="教材">
+          <el-input type="textarea" autosize v-model="book" />
+        </el-form-item>
+        <el-form-item label="参考书目">
+          <el-input type="textarea" autosize v-model="resource" />
         </el-form-item>
       </el-form>
     </div>
@@ -114,6 +147,12 @@
       <el-button @click="renderDoc" type="primary" class="confirm">
         确认
       </el-button>
+      <el-button @click="handleAdd" type="primary" class="confirm" v-if="isAdd == true">
+        添加课程实例
+      </el-button>
+      <el-button @click="handleEdit" type="primary" class="confirm" v-else-if="isAdd == false">
+        编辑课程实例
+      </el-button>
     </div>
   </div>
 </template>
@@ -123,6 +162,7 @@ import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import PizZipUtils from 'pizzip/utils/index.js'
 import { saveAs } from 'file-saver'
+import axios from 'axios'
 
 function loadFile (url, callback) {
   PizZipUtils.getBinaryContent(url, callback)
@@ -137,21 +177,29 @@ export default {
       importExcelFile: null,
       exportFileName: 'export.xlsx',
       password: '',
+      isAdd:this.$route.params.isAdd,
 
       teacherName: '',
-      courseName: '', // 课程名
-      courseCode: '', // 课程号
+      courseName:'', // 课程名
+      courseCode:'', // 课程号
       nature: '', // 课程性质
       time: '', // 填表日期
       credit: '', // 学分
       totalHours: '', // 总学时
-      resource: '', // 参考书目
       assessment: '', // 考核方式
       teachHours: '', // 讲授学时
       experHours: '', // 实验学时
       operateHours: '', // 上机学时
       practiceHours: '', // 课程实践学时
       selfStudyHours: '', // 自学学时
+
+      courseInfoName:'', // 课程实例名
+      semeter:'', // 学期
+      weekday:'', //上课星期
+      startTime:'', //上课时间
+      endTime:'', //下课时间
+      book:'', //教材
+      resource:'', //参考书目
 
       clints: [{
         number: '1',
@@ -193,6 +241,31 @@ export default {
     }
   },
   created () {
+   
+  },
+  beforeRouteEnter(to, from, next) {
+    //获取上个页面，vm相当于this
+    next(vm=>{        
+      var that = vm.isAdd
+      if(from.name == 'courseInfo'){
+        if(that == true){
+          vm.addAssign()
+          console.log('addSuccess')
+          console.log(that)
+        }
+        else if(that == false){
+          vm.addAssign()
+          vm.editAssign()
+          console.log('editSuccess')
+        }
+        else{
+          console.log('success')
+        }
+      }
+      else{
+        console.log('failed')
+      }
+    })
   },
   methods: {
     renderDoc () {
@@ -383,7 +456,84 @@ export default {
       } else {
         reader.readAsBinaryString(f)
       }
-    }
+    },
+    //创建课程实例
+    async handleAdd(){
+      if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
+        axios.post('http://api.moonyoung.top/api/admin/courseInstance', 
+        {
+          name: this.courseInfoName, 
+          semeter: this.semeter,
+          weekday: this.weekday,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          book: this.book,
+          resource: this.resource,
+          course: 1
+        })
+        .then( res => {
+          this.$message("创建成功")
+          console.log(res)
+        })
+        .catch( err =>{
+          this.$message("创建出错")
+          console.log(err)
+        })
+      }
+      else{
+        this.$message("填入内容不能为空");
+      }
+    },
+    //编辑课程实例，未实现
+    async handleEdit(){
+      if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
+        axios.patch('http://api.moonyoung.top/api/admin/courseInstance', 
+        {
+          name: this.courseInfoName, 
+          semeter: this.semeter,
+          weekday: this.weekday,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          book: this.book,
+          resource: this.resource,
+          course: 1
+        })
+        .then( res => {
+          this.$message("创建成功")
+          console.log(res)
+        })
+        .catch( err =>{
+          this.$message("创建出错")
+          console.log(err)
+        })
+      }
+      else{
+        this.$message("填入内容不能为空");
+      }
+    },
+    addAssign(){
+      this.courseName = this.$route.params.course.title;
+      this.courseCode = this.$route.params.course.code;
+      this.nature = this.$route.params.course.nature;
+      this.credit = this.$route.params.course.credit;
+      this.totalHours = this.$route.params.course.totalHours;
+      this.assessment = this.$route.params.course.assessment;
+    },
+    editAssign(){
+      this.courseInfoName = this.$route.params.courseInstance.name;
+      this.semeter = this.$route.params.courseInstance.semeter;
+      this.weekday = this.$route.params.courseInstance.weekday;
+      this.startTime = this.$route.params.courseInstance.startTime;
+      this.endTime = this.$route.params.courseInstance.endTime;
+      this.book = this.$route.params.courseInstance.book;
+      this.resource = this.changeLine(this.$route.params.courseInstance.resource);
+    },
+    changeLine:function (str) {
+      if(str != null)
+        //return str.replace(/\n/g,"<br/>") //把/n替换成<br>
+        // split按条件分割字符串
+        return (str.split("\r\n")).join(';')
+    },
   }
 }
 </script>
