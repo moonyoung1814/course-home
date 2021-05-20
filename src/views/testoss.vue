@@ -2,24 +2,18 @@
   <div>
     <input type="file" ref="input" @input="upload"/>
     <button @click="$refs.input.click()" >确认</button>
-    <upload :fileList="file" imageMax="1"></upload>
     <img src="http://moonyoung.oss-cn-shanghai.aliyuncs.com/123.jpg" />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-
-import upload from './oss.vue'
 // import oss from 'ali-oss'
 const oss = require('ali-oss')
 
 
 export default {
   name: 'testoss',
-  components: {
-    upload
-  },
   data () {
     return {
       file: [],
@@ -27,7 +21,8 @@ export default {
     }
   },
   async created () {
-    let ossKey = (await axios.get('http://localhost:7001/api/admin/account/oss')).data.data
+    console.log(process.env.API_HOST)
+    let ossKey = (await axios.get('admin/account/oss')).data.data
     this.client = oss({
       bucket: 'moonyoung',
       region: 'oss-cn-shanghai',

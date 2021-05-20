@@ -14,13 +14,21 @@ const store = new Vuex.Store({
   mutations: {
     setToken (state, token) {
       state.token = token
-      Cookies.set('token', token, {expires: 7, domain: '.moonyoung.top'})
+      if (process.env.NODE_ENV === 'development') {
+        Cookies.set('token', token, {expires: 7})
+      } else {
+        Cookies.set('token', token, {expires: 7, domain: '.moonyoung.top'})
+      }
       localStorage.setItem('token', token)
     },
     deleteToken (state) {
       state.token = ''
       localStorage.removeItem('token')
-      Cookies.remove('token')
+      if (process.env.NODE_ENV === 'development') {
+        Cookies.remove('token')
+      } else {
+        Cookies.remove('token', {domain: '.moonyoung.top'})
+      }
     }
   },
   actions: {
