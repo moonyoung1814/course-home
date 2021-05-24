@@ -14,7 +14,7 @@
         <li>
           <el-dropdown @command="handleCommand">
                   <span class="el-dropdown-link">
-                    夏洛克丶旭<i class="el-icon-arrow-down el-icon--right"></i>
+                    {{role.name}}<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="info">{{ $t('userDropdownMenu.basicInfor') }}</el-dropdown-item>
@@ -23,7 +23,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </li>
-        <li class="icon"><img :src="avatar"/></li>
+        <li class="icon"><img :src="role.image"/></li>
       </ul>
     </el-header>
     <tabNav></tabNav>
@@ -44,11 +44,15 @@ export default {
   data () {
     return {
       isfullScreen: true,
-      avatar: './static/images/icon.jpg',
       dialogInfoVisible: false,
       dialogPassVisible: false,
       title: '',
       userId: ''
+    }
+  },
+  computed: {
+    role () {
+      return this.$store.state.role.info
     }
   },
   methods: {
