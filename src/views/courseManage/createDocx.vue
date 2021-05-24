@@ -5,13 +5,19 @@
         <el-form-item label="教师姓名">
           <el-input v-model="teacherName" />
         </el-form-item>
-        <el-form-item label="课程名">
+        <el-form-item label="课程名称">
           <el-input v-model="courseName" />
         </el-form-item>
-        <el-form-item label="课程号">
+        <el-form-item label="课程代码">
           <el-input v-model="courseCode" />
         </el-form-item>
+        <el-form-item label="课程类别">
+          <el-input v-model="category" />
+        </el-form-item>
         <el-form-item label="课程性质">
+          <el-input v-model="nature" />
+        </el-form-item>
+        <el-form-item label="模块">
           <el-input v-model="nature" />
         </el-form-item>
         <el-form-item label="学分">
@@ -20,14 +26,20 @@
         <el-form-item label="总学时">
           <el-input v-model="totalHours" />
         </el-form-item>
+        <el-form-item label="实验学时">
+          <el-input v-model="experHours" />
+        </el-form-item>
+        <el-form-item label="开课学期">
+          <el-input v-model="semester" />
+        </el-form-item>
         <el-form-item label="考核方式">
           <el-input v-model="assessment" />
         </el-form-item>
+        <el-form-item label="起始周">
+          <el-input v-model="week" />
+        </el-form-item>
         <el-form-item label="讲授学时">
           <el-input v-model="teachHours" />
-        </el-form-item>
-        <el-form-item label="实验学时">
-          <el-input v-model="experHours" />
         </el-form-item>
         <el-form-item label="上机学时">
           <el-input v-model="operateHours" />
@@ -42,15 +54,27 @@
           <el-input v-model="year" />
         </el-form-item>
         <el-form-item label="学期">
-          <el-input v-model="semeter" />
+          <!-- 年份选择器 -->
+          <el-radio v-model="semeter" :label="1">第一学期</el-radio>
+          <el-radio v-model="semeter" :label="2">第二学期</el-radio>
         </el-form-item>
         <el-form-item label="上课星期">
-          <el-input v-model="weekday" />
+          <!-- 上课星期选择器 -->
+          <template>
+            <el-select v-model="weekday" placeholder="请选择上课星期">
+              <el-option
+                v-for="item in weekdayOptions"
+                :key="item.value"
+                :value="item.value">
+                <span>{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
         <el-form-item label="上课时间">
-          <!-- 选择器 -->
+          <!-- 上课时间选择器 -->
           <template>
-            <el-select v-model="time" placeholder="请选择">
+            <el-select v-model="schooltime" placeholder="请选择上课时间">
               <el-option
                 v-for="item in timeOptions"
                 :key="item.value"
@@ -190,26 +214,45 @@ export default {
           value: '18:30 - 20:05',
           label: '第十十一节'
         }],
+      weekdayOptions: [{
+          value: '周一', 
+        }, {
+          value: '周二',
+        }, {
+          value: '周三',
+        }, {
+          value: '周四',
+        }, {
+          value: '周五',
+        }],
 
+      //课程
       teacherName: '',
       courseName:'', // 课程名
-      courseCode:'', // 课程号
+      courseCode:'', // 课程代码
+      category:'', //课程类别
       nature: '', // 课程性质
-      time: '', // 填表日期
+      module:'', //模块
       credit: '', // 学分
       totalHours: '', // 总学时
-      assessment: '', // 考核方式
-      teachHours: '', // 讲授学时
       experHours: '', // 实验学时
+      semester:'', //开课学期
+      assessment: '', // 考核方式
+      week:'', //起始周
+
+      //教学文档
+      teachHours: '', // 讲授学时
       operateHours: '', // 上机学时
       practiceHours: '', // 课程实践学时
       selfStudyHours: '', // 自学学时
+      time: '', // 填表日期
 
+      //课程实例
       courseInfoId:'',//课程实例id
       year:'', // 学年
       semeter:'', // 学期
       weekday:'', //上课星期
-      time:'',  //上课时间
+      schooltime:'',  //上课时间
       book:'', //教材
       resource:'', //参考书目
 
@@ -471,23 +514,23 @@ export default {
     },
     //创建课程实例
     async handleAdd(){
-      if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
+      if(this.year != ''&& this.semeter != '' && this.weekday != '' && this.time != '' && this.book != '' && this.resource != ''){
         axios.post('http://api.moonyoung.top/api/admin/courseInstance', 
         {
           year: this.year,
           semeter: this.semeter,
           weekday: this.weekday,
-          time: this.time,
+          time: this.schooltime,
           book: this.book,
           resource: this.resource,
           course: 1
         })
         .then( res => {
-          this.$message("创建成功")
+          this.$message("创建实例成功")
           console.log(res)
         })
         .catch( err =>{
-          this.$message("创建出错")
+          this.$message("创建实例出错")
           console.log(err)
         })
       }
@@ -495,49 +538,66 @@ export default {
         this.$message("填入内容不能为空");
       }
     },
-    //编辑课程实例，未实现
+    //编辑课程实例
     async handleEdit(){
-      if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
-        axios.patch('http://api.moonyoung.top/api/admin/courseInstance/'+this.courseInfoId, 
-        {
-          year: this.year,
-          semeter: this.semeter,
-          weekday: this.weekday,
-          time: this.time,
-          book: this.book,
-          resource: this.resource,
-          course: 1
-        })
-        .then( res => {
-          this.$message("创建成功")
-          console.log(res)
-        })
-        .catch( err =>{
-          this.$message("创建出错")
-          console.log(err)
-        })
+      var that = this.courseInstance;
+      //不为空
+      if(this.semeter != '' && this.book != '' && this.resource != ''){
+        //需要修改
+        if(this.semeter != that.semeter || this.year != that.year || this.weekday != that.weekday || this.schooltime != that.time || this.book != that.book || this.resource != that.resource){
+          axios.patch('http://api.moonyoung.top/api/admin/courseInstance/'+this.courseInfoId, 
+          {
+            year: this.year,
+            semeter: this.semeter,
+            weekday: this.weekday,
+            time: this.schooltime,
+            book: this.book,
+            resource: this.resource,
+            course: 1
+          })
+          .then( res => {
+            this.$message("编辑实例成功")
+            console.log(res)
+          })
+          .catch( err =>{
+            this.$message("编辑实例出错")
+            console.log(err)
+          })
+        }
+        else{
+          this.$message("您未曾编辑实例")
+        }
       }
       else{
-        this.$message("填入内容不能为空");
+        this.$message("填入内容不能为空")
       }
     },
+    //创建实例时赋值操作
     addAssign(){
+      var that = this.course
       this.teacherName = this.$store.getters.info.name;
-      this.courseName = this.course.title;
-      this.courseCode = this.course.code;
-      this.nature = this.course.nature;
-      this.credit = this.course.credit;
-      this.totalHours = this.course.totalHours;
-      this.assessment = this.course.assessment;
+      this.courseName = that.title;
+      this.courseCode = that.code;
+      this.category = that .category;
+      this.module = that.module;
+      this.nature = that.nature;
+      this.credit = that.credit;
+      this.totalHours = that.totalHours;
+      this.assessment = that.assessment;
+      this.experHours = that.experiHours;
+      this.semester = that.semester;
+      this.week = that.week
     },
+    //编辑实例时附加赋值操作
     editAssign(){
-      this.courseInfoId = this.courseInstance.id;
-      this.year = this.courseInstance.year;
-      this.semeter = this.courseInstance.semeter;
-      this.weekday = this.courseInstance.weekday;
-      this.time = this.courseInstance.time;
-      this.book = this.courseInstance.book;
-      this.resource = this.changeLine(this.courseInstance.resource);
+      var that = this.courseInstance
+      this.courseInfoId = that.id;
+      this.year = that.year;
+      this.semeter = that.semeter;
+      this.weekday = that.weekday;
+      this.schooltime = that.time;
+      this.book = that.book;
+      this.resource = this.changeLine(that.resource);
     },
     changeLine:function (str) {
       if(str != null)
