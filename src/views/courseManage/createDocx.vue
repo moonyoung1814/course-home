@@ -38,8 +38,8 @@
         <el-form-item label="自学学时">
           <el-input v-model="selfStudyHours" />
         </el-form-item>
-        <el-form-item label="课程实例名">
-          <el-input v-model="courseInfoName" />
+        <el-form-item label="学年">
+          <el-input v-model="year" />
         </el-form-item>
         <el-form-item label="学期">
           <el-input v-model="semeter" />
@@ -48,25 +48,19 @@
           <el-input v-model="weekday" />
         </el-form-item>
         <el-form-item label="上课时间">
-          <el-time-select
-            placeholder="起始时间"
-            v-model="startTime"
-            :picker-options="{
-              start: '08:05',
-              step: '00:05',
-              end: '20:10'
-            }">
-          </el-time-select>
-          <el-time-select
-            placeholder="结束时间"
-            v-model="endTime"
-            :picker-options="{
-              start: '08:50',
-              step: '00:05',
-              end: '20:55',
-              minTime: startTime
-            }">
-          </el-time-select>
+          <!-- 选择器 -->
+          <template>
+            <el-select v-model="time" placeholder="请选择">
+              <el-option
+                v-for="item in timeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.label">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
         <el-form-item label="教材">
           <el-input type="textarea" autosize v-model="book" />
@@ -178,6 +172,24 @@ export default {
       exportFileName: 'export.xlsx',
       password: '',
       isAdd:this.$route.params.isAdd,
+      course:this.$route.params.course,
+      courseInstance:this.$route.params.courseInstance,
+      timeOptions: [{
+          value: '8:05 - 9:40', //时间
+          label: '第一二节' //课时
+        }, {
+          value: '10:00 - 11:35',
+          label: '第三四节'
+        }, {
+          value: '13:30 - 15:05',
+          label: '第六七节'
+        }, {
+          value: '15:15 - 16:50',
+          label: '第八九节'
+        }, {
+          value: '18:30 - 20:05',
+          label: '第十十一节'
+        }],
 
       teacherName: '',
       courseName:'', // 课程名
@@ -193,11 +205,11 @@ export default {
       practiceHours: '', // 课程实践学时
       selfStudyHours: '', // 自学学时
 
-      courseInfoName:'', // 课程实例名
+      courseInfoId:'',//课程实例id
+      year:'', // 学年
       semeter:'', // 学期
       weekday:'', //上课星期
-      startTime:'', //上课时间
-      endTime:'', //下课时间
+      time:'',  //上课时间
       book:'', //教材
       resource:'', //参考书目
 
@@ -462,11 +474,10 @@ export default {
       if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
         axios.post('http://api.moonyoung.top/api/admin/courseInstance', 
         {
-          name: this.courseInfoName, 
+          year: this.year,
           semeter: this.semeter,
           weekday: this.weekday,
-          startTime: this.startTime,
-          endTime: this.endTime,
+          time: this.time,
           book: this.book,
           resource: this.resource,
           course: 1
@@ -487,13 +498,12 @@ export default {
     //编辑课程实例，未实现
     async handleEdit(){
       if(this.courseInfoName != '' || this.semeter != '' || this.weekday != '' || this.startTime != '' || this.endTime != '' || this.book != '' || this.resource != ''){
-        axios.patch('http://api.moonyoung.top/api/admin/courseInstance', 
+        axios.patch('http://api.moonyoung.top/api/admin/courseInstance/'+this.courseInfoId, 
         {
-          name: this.courseInfoName, 
+          year: this.year,
           semeter: this.semeter,
           weekday: this.weekday,
-          startTime: this.startTime,
-          endTime: this.endTime,
+          time: this.time,
           book: this.book,
           resource: this.resource,
           course: 1
@@ -512,21 +522,22 @@ export default {
       }
     },
     addAssign(){
-      this.courseName = this.$route.params.course.title;
-      this.courseCode = this.$route.params.course.code;
-      this.nature = this.$route.params.course.nature;
-      this.credit = this.$route.params.course.credit;
-      this.totalHours = this.$route.params.course.totalHours;
-      this.assessment = this.$route.params.course.assessment;
+      this.teacherName = this.$store.getters.info.name;
+      this.courseName = this.course.title;
+      this.courseCode = this.course.code;
+      this.nature = this.course.nature;
+      this.credit = this.course.credit;
+      this.totalHours = this.course.totalHours;
+      this.assessment = this.course.assessment;
     },
     editAssign(){
-      this.courseInfoName = this.$route.params.courseInstance.name;
-      this.semeter = this.$route.params.courseInstance.semeter;
-      this.weekday = this.$route.params.courseInstance.weekday;
-      this.startTime = this.$route.params.courseInstance.startTime;
-      this.endTime = this.$route.params.courseInstance.endTime;
-      this.book = this.$route.params.courseInstance.book;
-      this.resource = this.changeLine(this.$route.params.courseInstance.resource);
+      this.courseInfoId = this.courseInstance.id;
+      this.year = this.courseInstance.year;
+      this.semeter = this.courseInstance.semeter;
+      this.weekday = this.courseInstance.weekday;
+      this.time = this.courseInstance.time;
+      this.book = this.courseInstance.book;
+      this.resource = this.changeLine(this.courseInstance.resource);
     },
     changeLine:function (str) {
       if(str != null)

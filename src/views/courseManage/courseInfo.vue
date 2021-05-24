@@ -78,13 +78,13 @@
           title="课程实例">
           <el-table :data="cScope.row.courseInstance" max-height="400" >
             <el-table-column width="100" property="name" label="课程名"></el-table-column>
-            <el-table-column width="100" property="semeter" label="学期"></el-table-column>
+            <el-table-column width="80" property="year" label="学年"></el-table-column>
+            <el-table-column width="80" property="semeter" label="学期"></el-table-column>
             <el-table-column width="100" property="weekday" label="上课星期"></el-table-column>
-            <el-table-column width="100" property="startTime" label="上课时间"></el-table-column>
-            <el-table-column width="100" property="endTime" label="下课时间"></el-table-column>
-            <el-table-column width="150" property="book" label="教材"></el-table-column>
+            <el-table-column width="120" property="time" label="上课时间"></el-table-column>
+            <el-table-column width="160" property="book" label="教材"></el-table-column>
             <el-table-column width="200" property="resource" label="参考书目"></el-table-column>
-            <el-table-column width="70" label="操作">
+            <el-table-column width="80" label="操作">
               <template slot-scope="ciScope">
                 <router-link :to="{name:'createDocx',params:{course:cScope.row,courseInstance:ciScope.row,isAdd:false}}">
                   <el-button size="mini" type="primary">编辑</el-button>
