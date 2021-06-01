@@ -94,63 +94,9 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="clints" style="width: 100%" border>
-      <el-table-column type="index" width="50">
-      </el-table-column>
-      <el-table-column prop="id" label="学号" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.id">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="name" label="姓名" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.name">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="a" label="团队表现" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.a">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="b" label="作品" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.b">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="c" label="答辩" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.c">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="d" label="文档" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.d">
-        </el-input>
-      </template>
-      </el-table-column>
-      <el-table-column prop="total" label="总评" width="180">
-        <template slot-scope="scope">
-        <el-input v-model="scope.row.total">
-        </el-input>
-      </template>
-      </el-table-column>
-    </el-table>
     <div>
-      <el-button @click="handleAdd" type="primary" class="confirm">
-        添加一行
-      </el-button>
-      <el-button @click="handleDelete" type="primary" class="confirm">
-        删除一行
-      </el-button>
-      <el-button @click="handleExport" type="primary" class="confirm">
-        导出表格
-      </el-button>
       <el-upload
+        v-if="isAdd == false"
         class="confirm"
         action=""
         :on-change="handleChange"
@@ -163,13 +109,13 @@
           <el-button size="small" type="primary">上传成绩册</el-button>
       </el-upload>
       <el-button @click="renderDoc" type="primary" class="confirm">
-        确认
+        生成教学文档
       </el-button>
       <el-button @click="handleAdd" type="primary" class="confirm" v-if="isAdd == true">
         添加课程实例
       </el-button>
       <el-button @click="handleEdit" type="primary" class="confirm" v-else-if="isAdd == false">
-        编辑课程实例
+        提交修改
       </el-button>
     </div>
   </div>
@@ -195,129 +141,90 @@ export default {
       importExcelFile: null,
       exportFileName: 'export.xlsx',
       password: '',
-      isAdd:this.$route.params.isAdd,
-      course:this.$route.params.course,
-      courseInstance:this.$route.params.courseInstance,
+      isAdd: this.$route.params.isAdd,
+      course: this.$route.params.course,
+      courseInstance: this.$route.params.courseInstance,
       timeOptions: [{
-          value: '8:05 - 9:40', //时间
-          label: '第一二节' //课时
-        }, {
-          value: '10:00 - 11:35',
-          label: '第三四节'
-        }, {
-          value: '13:30 - 15:05',
-          label: '第六七节'
-        }, {
-          value: '15:15 - 16:50',
-          label: '第八九节'
-        }, {
-          value: '18:30 - 20:05',
-          label: '第十十一节'
-        }],
+        value: '8:05 - 9:40', // 时间
+        label: '第一二节' // 课时
+      }, {
+        value: '10:00 - 11:35',
+        label: '第三四节'
+      }, {
+        value: '13:30 - 15:05',
+        label: '第六七节'
+      }, {
+        value: '15:15 - 16:50',
+        label: '第八九节'
+      }, {
+        value: '18:30 - 20:05',
+        label: '第十十一节'
+      }],
       weekdayOptions: [{
-          value: '周一', 
-        }, {
-          value: '周二',
-        }, {
-          value: '周三',
-        }, {
-          value: '周四',
-        }, {
-          value: '周五',
-        }],
+        value: '周一'
+      }, {
+        value: '周二'
+      }, {
+        value: '周三'
+      }, {
+        value: '周四'
+      }, {
+        value: '周五'
+      }],
 
-      //课程
+      // 课程
       teacherName: '',
-      courseName:'', // 课程名
-      courseCode:'', // 课程代码
-      category:'', //课程类别
+      courseName: '', // 课程名
+      courseCode: '', // 课程代码
+      category: '', // 课程类别
       nature: '', // 课程性质
-      module:'', //模块
+      module: '', // 模块
       credit: '', // 学分
       totalHours: '', // 总学时
       experHours: '', // 实验学时
-      semester:'', //开课学期
+      semester: '', // 开课学期
       assessment: '', // 考核方式
-      week:'', //起始周
+      week: '', // 起始周
 
-      //教学文档
+      // 教学文档
       teachHours: '', // 讲授学时
       operateHours: '', // 上机学时
       practiceHours: '', // 课程实践学时
       selfStudyHours: '', // 自学学时
       time: '', // 填表日期
 
-      //课程实例
-      courseInfoId:'',//课程实例id
-      year:'', // 学年
-      semeter:'', // 学期
-      weekday:'', //上课星期
-      schooltime:'',  //上课时间
-      book:'', //教材
-      resource:'', //参考书目
+      // 课程实例
+      courseInfoId: '', // 课程实例id
+      year: '', // 学年
+      semeter: '', // 学期
+      weekday: '', // 上课星期
+      schooltime: '', // 上课时间
+      book: '', // 教材
+      resource: '', // 参考书目
 
-      clints: [{
-        number: '1',
-        id: '',
-        name: '',
-        a: '',
-        b: '',
-        c: '',
-        d: '',
-        total: ''
-      }, {
-        number: '2',
-        id: '',
-        name: '',
-        a: '',
-        b: '',
-        c: '',
-        d: '',
-        total: ''
-      }, {
-        number: '3',
-        id: '',
-        name: '',
-        a: '',
-        b: '',
-        c: '',
-        d: '',
-        total: ''
-      }, {
-        number: '4',
-        id: '',
-        name: '',
-        a: '',
-        b: '',
-        c: '',
-        d: '',
-        total: ''
-      }]
+      clints: []
     }
   },
   created () {
-   
+
   },
-  beforeRouteEnter(to, from, next) {
-    //获取上个页面，vm相当于this
-    next(vm=>{        
+  beforeRouteEnter (to, from, next) {
+    // 获取上个页面，vm相当于this
+    next(vm => {
       var that = vm.isAdd
-      if(from.name == 'courseInfo'){
-        if(that == true){
+      if (from.name == 'courseInfo') {
+        if (that == true) {
           vm.addAssign()
           console.log('addSuccess')
           console.log(that)
-        }
-        else if(that == false){
+        } else if (that == false) {
           vm.addAssign()
           vm.editAssign()
           console.log('editSuccess')
-        }
-        else{
+        } else {
           console.log('success')
         }
-      }
-      else{
+      } else {
         console.log('failed')
       }
     })
@@ -378,20 +285,6 @@ export default {
     getDate () {
       let date = new Date()
       return date.getFullYear().toString() + '.' + (date.getMonth() + 1).toString() + '.' + date.getDate().toString()
-    },
-    handleAdd () {
-      this.clints.push({
-        id: '',
-        name: '',
-        a: '',
-        b: '',
-        c: '',
-        d: '',
-        total: ''
-      })
-    },
-    handleDelete () {
-      this.clints.pop()
     },
     formatJson (filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
@@ -512,40 +405,10 @@ export default {
         reader.readAsBinaryString(f)
       }
     },
-    //创建课程实例
-    async handleAdd(){
-      if(this.year != ''&& this.semeter != '' && this.weekday != '' && this.time != '' && this.book != '' && this.resource != ''){
-        axios.post('http://api.moonyoung.top/api/admin/courseInstance', 
-        {
-          year: this.year,
-          semeter: this.semeter,
-          weekday: this.weekday,
-          time: this.schooltime,
-          book: this.book,
-          resource: this.resource,
-          course: 1
-        })
-        .then( res => {
-          this.$message("创建实例成功")
-          console.log(res)
-        })
-        .catch( err =>{
-          this.$message("创建实例出错")
-          console.log(err)
-        })
-      }
-      else{
-        this.$message("填入内容不能为空");
-      }
-    },
-    //编辑课程实例
-    async handleEdit(){
-      var that = this.courseInstance;
-      //不为空
-      if(this.semeter != '' && this.book != '' && this.resource != ''){
-        //需要修改
-        if(this.semeter != that.semeter || this.year != that.year || this.weekday != that.weekday || this.schooltime != that.time || this.book != that.book || this.resource != that.resource){
-          axios.patch('http://api.moonyoung.top/api/admin/courseInstance/'+this.courseInfoId, 
+    // 创建课程实例
+    async handleAdd () {
+      if (this.year != '' && this.semeter != '' && this.weekday != '' && this.time != '' && this.book != '' && this.resource != '') {
+        axios.post('http://api.moonyoung.top/api/admin/courseInstance',
           {
             year: this.year,
             semeter: this.semeter,
@@ -555,56 +418,84 @@ export default {
             resource: this.resource,
             course: 1
           })
-          .then( res => {
-            this.$message("编辑实例成功")
+          .then(res => {
+            this.$message('创建实例成功')
             console.log(res)
           })
-          .catch( err =>{
-            this.$message("编辑实例出错")
+          .catch(err => {
+            this.$message('创建实例出错')
             console.log(err)
           })
-        }
-        else{
-          this.$message("您未曾编辑实例")
-        }
-      }
-      else{
-        this.$message("填入内容不能为空")
+      } else {
+        this.$message('填入内容不能为空')
       }
     },
-    //创建实例时赋值操作
-    addAssign(){
+    // 编辑课程实例
+    async handleEdit () {
+      var that = this.courseInstance
+      // 不为空
+      if (this.semeter != '' && this.book != '' && this.resource != '') {
+        // 需要修改
+        if (this.semeter != that.semeter || this.year != that.year || this.weekday != that.weekday || this.schooltime != that.time || this.book != that.book || this.resource != that.resource) {
+          axios.patch('http://api.moonyoung.top/api/admin/courseInstance/' + this.courseInfoId,
+            {
+              year: this.year,
+              semeter: this.semeter,
+              weekday: this.weekday,
+              time: this.schooltime,
+              book: this.book,
+              resource: this.resource,
+              course: 1
+            })
+            .then(res => {
+              this.$message('编辑实例成功')
+              console.log(res)
+            })
+            .catch(err => {
+              this.$message('编辑实例出错')
+              console.log(err)
+            })
+        } else {
+          this.$message('您未曾编辑实例')
+        }
+      } else {
+        this.$message('填入内容不能为空')
+      }
+    },
+    // 创建实例时赋值操作
+    addAssign () {
       var that = this.course
-      this.teacherName = this.$store.getters.info.name;
-      this.courseName = that.title;
-      this.courseCode = that.code;
-      this.category = that .category;
-      this.module = that.module;
-      this.nature = that.nature;
-      this.credit = that.credit;
-      this.totalHours = that.totalHours;
-      this.assessment = that.assessment;
-      this.experHours = that.experiHours;
-      this.semester = that.semester;
+      this.teacherName = this.$store.getters.info.name
+      this.courseName = that.title
+      this.courseCode = that.code
+      this.category = that.category
+      this.module = that.module
+      this.nature = that.nature
+      this.credit = that.credit
+      this.totalHours = that.totalHours
+      this.assessment = that.assessment
+      this.experHours = that.experiHours
+      this.semester = that.semester
       this.week = that.week
     },
-    //编辑实例时附加赋值操作
-    editAssign(){
+    // 编辑实例时附加赋值操作
+    editAssign () {
       var that = this.courseInstance
-      this.courseInfoId = that.id;
-      this.year = that.year;
-      this.semeter = that.semeter;
-      this.weekday = that.weekday;
-      this.schooltime = that.time;
-      this.book = that.book;
-      this.resource = this.changeLine(that.resource);
+      this.courseInfoId = that.id
+      this.year = that.year
+      this.semeter = that.semeter
+      this.weekday = that.weekday
+      this.schooltime = that.time
+      this.book = that.book
+      this.resource = this.changeLine(that.resource)
     },
-    changeLine:function (str) {
-      if(str != null)
-        //return str.replace(/\n/g,"<br/>") //把/n替换成<br>
+    changeLine: function (str) {
+      if (str != null) {
+        // return str.replace(/\n/g,"<br/>") //把/n替换成<br>
         // split按条件分割字符串
-        return (str.split("\r\n")).join(';')
-    },
+        return (str.split('\r\n')).join(';')
+      }
+    }
   }
 }
 </script>

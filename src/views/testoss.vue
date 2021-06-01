@@ -1,40 +1,41 @@
 <template>
   <div>
-    <input type="file" ref="input" @input="upload"/>
-    <button @click="$refs.input.click()" >确认</button>
-    <img src="http://moonyoung.oss-cn-shanghai.aliyuncs.com/123.jpg" />
+    <upload-image :limit="5" :image-list="imageList" @change="handleChange"/>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-// import oss from 'ali-oss'
-const oss = require('ali-oss')
+import uploadImage from '../components/upload/image'
+// const oss = require('ali-oss')
 
 
 export default {
   name: 'testoss',
+  components: {
+    uploadImage
+  },
   data () {
     return {
       file: [],
-      client: {}
+      client: {},
+      // imageList: [
+      //   {
+      //     name: 'https://moonyoung.oss-cn-shanghai.aliyuncs.com/1622393790081.png',
+      //     url: 'https://moonyoung.oss-cn-shanghai.aliyuncs.com/1622393790081.png'
+      //   }
+      // ],
+      imageList: [
+        'https://moonyoung.oss-cn-shanghai.aliyuncs.com/1622393790081.png'
+      ]
     }
   },
   async created () {
-    console.log(process.env.API_HOST)
-    let ossKey = (await axios.get('admin/account/oss')).data.data
-    this.client = oss({
-      bucket: 'moonyoung',
-      region: 'oss-cn-shanghai',
-      accessKeyId: ossKey.accessKeyId,
-      accessKeySecret: ossKey.accessKeySecret,
-      // secure: false,
-      // endpoint: 'oss-cn-shanghai',
-      stsToken: ossKey.securityToken
-    })
-    // this.client.listBuckets().then(res => {
-    //   console.log(res)
-    // })
+    await axios.options('admin/account')
+    if (!this.$store.state.oss) {
+      let oss = (await axios.get('admin/account/oss')).data.data
+      await this.$store.dispatch('setOss', oss)
+    }
   },
 
   methods: {
@@ -43,6 +44,9 @@ export default {
       console.log(blob)// 文件对象到手
       let result = await this.client.put('123.jpg', blob)
       console.log(result)
+    },
+    handleChange (fileList) {
+      console.log(fileList)
     }
   }
 }

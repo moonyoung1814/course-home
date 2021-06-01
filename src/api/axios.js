@@ -57,10 +57,9 @@ axios.interceptors.response.use(
         message: error.response.data.message,
         type: 'warning'
       })
+      localStorage.removeItem('token')
       Cookies.remove('access_token')
-      setTimeout(() => {
-        location.reload()
-      }, 3000)
+      location.reload()
     }
     return Promise.reject(error.response) // 返回接口返回的错误信息
   })

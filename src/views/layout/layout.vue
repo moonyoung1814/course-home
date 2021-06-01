@@ -18,13 +18,13 @@
 </template>
 
 <script>
-import layoutAside from "./aside/aside"
-import layoutHeader from "./header/header"
-import Bottom from "./Footer/bottom"
-import langSelect from "../../components/lang/langSelect"
+import layoutAside from './aside/aside'
+import layoutHeader from './header/header'
+import Bottom from './Footer/bottom'
+import langSelect from '../../components/lang/langSelect'
 
 export default {
-  name: "layout",
+  name: 'layout',
   components: {
     layoutHeader,
     Bottom,

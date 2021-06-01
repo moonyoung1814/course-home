@@ -12,28 +12,28 @@
 </template>
 <script>
 export default {
-  name: "langSelect",
+  name: 'langSelect',
   data () {
     return {
-      language: ""
+      language: ''
     }
   },
   mounted () {
-    const _lang = localStorage.lang || "cn"
+    const _lang = localStorage.lang || 'cn'
     this.getLanguage(_lang)
   },
   methods: {
     handleSetLanguage (lang) {
       this.$i18n.locale = lang
-      localStorage.setItem("lang", lang)
+      localStorage.setItem('lang', lang)
       this.getLanguage(lang)
     },
     getLanguage (val) {
-      if (val === "cn") {
-        this.language = "中文"
+      if (val === 'cn') {
+        this.language = '中文'
       }
-      if (val === "en") {
-        this.language = "English"
+      if (val === 'en') {
+        this.language = 'English'
       }
     }
   }

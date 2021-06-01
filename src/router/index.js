@@ -104,10 +104,11 @@ let addRouter = [
     children: [
       {
         // path: '/courseManage/createDocx',
-        path: '/courseManage/createDocx',
+        path: '/courseManage/editCourseIns',
         iconCls: 'fa fa-toggle-on',
-        name: routeName.createDocx,
-        component: () => import('@/views/courseManage/createDocx'),
+        name: routeName.editCourseIns,
+        component: () => import('@/views/courseManage/editCourseIns'),
+        hidden: true,
         meta: {role: ['teacher']},
         children: []
       },
@@ -116,6 +117,14 @@ let addRouter = [
         iconCls: 'fa fa-toggle-on',
         name: routeName.courseInfo,
         component: () => import('@/views/courseManage/courseInfo'),
+        meta: {role: ['teacher']},
+        children: []
+      },
+      {
+        path: '/courseManage/manageGrade',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.manageGrade,
+        component: () => import('@/views/courseManage/manageGrade'),
         meta: {role: ['teacher']},
         children: []
       },

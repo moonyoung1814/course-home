@@ -67,7 +67,7 @@
       width="70">
     </el-table-column>
     <el-table-column
-      fixed="right" 
+      fixed="right"
       label="操作"
       width="140">
       <template slot-scope="cScope">
@@ -86,7 +86,7 @@
             <el-table-column width="200" property="resource" label="参考书目"></el-table-column>
             <el-table-column width="80" label="操作">
               <template slot-scope="ciScope">
-                <router-link :to="{name:'createDocx',params:{course:cScope.row,courseInstance:ciScope.row,isAdd:false}}">
+                <router-link :to="{name:'editCourseIns', params:{course:cScope.row,courseInstance:ciScope.row,isAdd:false}}">
                   <el-button size="mini" type="primary">编辑</el-button>
                 </router-link>
               </template>
@@ -94,7 +94,7 @@
           </el-table>
           <el-button slot="reference" size="mini">查看</el-button>
         </el-popover>
-        <router-link :to="{name:'createDocx',params:{course:cScope.row,isAdd:true}}">
+        <router-link :to="{name:'editCourseIns', params:{course:cScope.row,isAdd:true}}">
           <el-button size="mini" type="danger">添加</el-button>
         </router-link>
       </template>
@@ -107,27 +107,28 @@
 import axios from 'axios'
 export default {
   name: 'courseInfo',
-  data(){
-    return{
-      courseInfo:[],
-      course:[],
-      dialogVisible:false
+  data () {
+    return {
+      courseInfo: [],
+      course: [],
+      dialogVisible: false
     }
   },
-  async created(){
-    let course = (await axios.get('http://api.moonyoung.top/api/admin/course?relations=courseInstance')).data.data;
-    this.course = course;
-    console.log(this.course);
+  async created () {
+    let course = (await axios.get('http://api.moonyoung.top/api/admin/course?relations=courseInstance')).data.data
+    this.course = course
+    console.log(this.course)
   },
-  methods:{
-    changeLine:function (str) {
-      if(str != null)
-        // return str.replace(/\n/g,'<br>') 把/n替换成<br>
-        // split按条件分割字符串
-        return str.split("\r\n")
+  methods: {
+    changeLine: function (str) {
+      if (str != null) {
+      // return str.replace(/\n/g,'<br>') 把/n替换成<br>
+      // split按条件分割字符串
+        return str.split('\r\n')
+      }
     },
-    handleAdd:function(){
-      this.$router.push({name:'createDocx'});
+    handleAdd: function () {
+      this.$router.push({name: 'createDocx'})
     }
   }
 }

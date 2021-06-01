@@ -9,7 +9,8 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    token: localStorage.getItem('token') || ''
+    token: localStorage.getItem('token') || '',
+    oss: JSON.parse(localStorage.getItem('oss')) || null // 用于存放oss口令
   },
   mutations: {
     setToken (state, token) {
@@ -29,6 +30,11 @@ const store = new Vuex.Store({
       } else {
         Cookies.remove('token', {domain: '.moonyoung.top'})
       }
+    },
+    setOss (state, oss) {
+      console.log(oss)
+      state.oss = oss
+      localStorage.setItem('oss', JSON.stringify(oss))
     }
   },
   actions: {
@@ -43,6 +49,9 @@ const store = new Vuex.Store({
         commit('deleteToken')
         resolve()
       })
+    },
+    async setOss ({commit}, oss) {
+      commit('setOss', oss)
     }
   },
   getters: {
@@ -52,6 +61,7 @@ const store = new Vuex.Store({
       return state.token
     },
     info: state => state.role.info,
+    oss: state => state.oss,
     routers: state => state.routerData.routers,
     logoShow: state => state.layout.logoShow,
     isCollapse: state => state.layout.isCollapse,
