@@ -5,17 +5,17 @@
  * Description: 全局工具方法
  */
 
-import CryptoJS from "crypto-js"
+import CryptoJS from 'crypto-js'
 
-const encryptKey = "WfJTKO9S4eLkrPz2JKrAnzdb"
-const encryptIV = "D076D35C"
+const encryptKey = 'WfJTKO9S4eLkrPz2JKrAnzdb'
+const encryptIV = 'D076D35C'
 
 // 深度复制
 export function deepClone (obj) {
   let result = Array.isArray(obj) ? [] : {}
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
-      if (typeof obj[key] === "object") {
+      if (typeof obj[key] === 'object') {
         result[key] = deepClone(obj[key])
       } else {
         result[key] = obj[key]
@@ -54,14 +54,14 @@ export function randomWord (randomFlag, min, max) {
   // randomFlag: Boolean 是否随机个数
   // min 最少个数
   // max 最大个数
-  var str = ""
+  var str = ''
   var range = min
-  var arr = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+  var arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
   // 随机产生
   if (randomFlag) {
     range = Math.round(Math.random() * (max - min)) + min
   }
-  var pos = ""
+  var pos = ''
   for (var i = 0; i < range; i++) {
     pos = Math.round(Math.random() * (arr.length - 1))
     str += arr[pos]
@@ -88,13 +88,13 @@ export function hasRepeatValue (arr, key = null) {
 
 // 获取cookie值
 export function getCookie (name, defaultValue) {
-  const result = new RegExp("(^| )" + name + "=([^;]*)(;|$)")
+  const result = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
   return result[0] === document.cookie.match(result[1]) ? unescape(result[0][2]) : defaultValue
 }
 
 // base64ToFile
 export function base64ToFile (base64Data, tempfilename, contentType) {
-  contentType = contentType || ""
+  contentType = contentType || ''
   var sliceSize = 1024
   var byteCharacters = atob(base64Data)
   var bytesLength = byteCharacters.length
@@ -117,7 +117,7 @@ export function base64ToFile (base64Data, tempfilename, contentType) {
 
 // 将base64转换为文件
 export function dataURLtoFile (dataurl, filename) {
-  var arr = dataurl.split(",")
+  var arr = dataurl.split(',')
   var mime = arr[0].match(/:(.*?);/)[1]
   var bstr = atob(arr[1])
   var n = bstr.length
@@ -130,15 +130,15 @@ export function dataURLtoFile (dataurl, filename) {
 
 // 将图片转换为Base64
 export function getImgToBase64 (url, callback, outputFormat) {
-  var canvas = document.createElement("canvas")
-  var ctx = canvas.getContext("2d")
+  var canvas = document.createElement('canvas')
+  var ctx = canvas.getContext('2d')
   var img = new Image()
-  img.crossOrigin = "Anonymous"
+  img.crossOrigin = 'Anonymous'
   img.onload = function () {
     canvas.height = img.height
     canvas.width = img.width
     ctx.drawImage(img, 0, 0)
-    var dataURL = canvas.toDataURL(outputFormat || "image/png")
+    var dataURL = canvas.toDataURL(outputFormat || 'image/png')
     callback(dataURL)
     canvas = null
   }
@@ -148,9 +148,9 @@ export function getImgToBase64 (url, callback, outputFormat) {
 // 转换级联下拉数据
 export function loopOptions (list, option = {}) {
   option = {
-    value: "id",
-    label: "name",
-    children: "children",
+    value: 'id',
+    label: 'name',
+    children: 'children',
     ...option
   }
   if (list instanceof Array && list.length) {
@@ -167,7 +167,7 @@ export function loopOptions (list, option = {}) {
 }
 
 // 通过Id获取级联数据id数组
-export function getTreeIds (tree, currentId, key = "id") {
+export function getTreeIds (tree, currentId, key = 'id') {
   let parent = {}
   let pid = {}
   const loop = (list, level) => {
@@ -196,10 +196,10 @@ export function getTreeIds (tree, currentId, key = "id") {
 
 // 秒转换时分秒
 export function transverterMss (result) {
-  var h = Math.floor(result / 3600) < 10 ? "0" + Math.floor(result / 3600) : Math.floor(result / 3600)
-  var m = Math.floor((result / 60 % 60)) < 10 ? "0" + Math.floor((result / 60 % 60)) : Math.floor((result / 60 % 60))
-  var s = Math.floor((result % 60)) < 10 ? "0" + Math.floor((result % 60)) : Math.floor((result % 60))
-  return h + ":" + m + ":" + s
+  var h = Math.floor(result / 3600) < 10 ? '0' + Math.floor(result / 3600) : Math.floor(result / 3600)
+  var m = Math.floor((result / 60 % 60)) < 10 ? '0' + Math.floor((result / 60 % 60)) : Math.floor((result / 60 % 60))
+  var s = Math.floor((result % 60)) < 10 ? '0' + Math.floor((result % 60)) : Math.floor((result % 60))
+  return h + ':' + m + ':' + s
 }
 
 // 获取日期时间戳
@@ -209,7 +209,7 @@ export function getTime (dayNum) {
   var lastY = lw.getFullYear()
   var lastM = lw.getMonth() + 1
   var lastD = lw.getDate()
-  var startdate = lastY + "-" + (lastM < 10 ? "0" + lastM : lastM) + "-" + (lastD < 10 ? "0" + lastD : lastD)
+  var startdate = lastY + '-' + (lastM < 10 ? '0' + lastM : lastM) + '-' + (lastD < 10 ? '0' + lastD : lastD)
   var b = startdate.split(/\D/)
   var date = new Date(b[0], b[1] - 1, b[2])
   var time = date.getTime()
@@ -223,7 +223,7 @@ export function getData (dayNum) {
   var lastY = lw.getFullYear()
   var lastM = lw.getMonth() + 1
   var lastD = lw.getDate()
-  var startdate = lastY + "-" + (lastM < 10 ? "0" + lastM : lastM) + "-" + (lastD < 10 ? "0" + lastD : lastD)
+  var startdate = lastY + '-' + (lastM < 10 ? '0' + lastM : lastM) + '-' + (lastD < 10 ? '0' + lastD : lastD)
   return startdate
 }
 

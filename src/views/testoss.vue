@@ -17,8 +17,6 @@ export default {
   },
   data () {
     return {
-      file: [],
-      client: {},
       // imageList: [
       //   {
       //     name: 'https://moonyoung.oss-cn-shanghai.aliyuncs.com/1622393790081.png',
@@ -46,7 +44,7 @@ export default {
       console.log(result)
     },
     handleChange (fileList) {
-      console.log(fileList)
+      this.imageList = fileList
     }
   }
 }

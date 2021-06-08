@@ -141,6 +141,40 @@ let addRouter = [
   {
     path: '/',
     iconCls: 'fa fa-universal-access',
+    name: routeName.projectManage,
+    component: Layout,
+    meta: {role: ['teacher', 'student']},
+    children: [
+      {
+        path: '/projectManage/index',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.myProject,
+        component: () => import('@/views/projectManage/index'),
+        meta: {role: ['student']},
+        children: []
+      },
+      {
+        path: '/projectManage/new',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.createProject,
+        component: () => import('@/views/projectManage/new'),
+        meta: {role: ['student']},
+        children: []
+      },
+      {
+        path: '/projectManage/edit',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.updateProject,
+        hidden: true,
+        component: () => import('@/views/projectManage/edit'),
+        meta: {role: ['student']},
+        children: []
+      }
+    ]
+  },
+  {
+    path: '/',
+    iconCls: 'fa fa-universal-access',
     name: routeName.infoManage,
     component: Layout,
     meta: {role: ['teacher', 'student']},

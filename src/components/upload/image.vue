@@ -22,6 +22,7 @@
 
 <script>
 import axios from 'axios'
+import getSuffix from '../../utils/getSuffix'
 const oss = require('ali-oss')
 
 export default {
@@ -82,9 +83,9 @@ export default {
       this.$emit('change', this.list)
     },
     async httpRequest (param) {
+      console.log(this.$store.state)
       this.loading = true
-      let index = param.file.name.indexOf('.')
-      let suffix = param.file.name.substring(index, param.file.name.length)
+      let suffix = getSuffix(param.file.name)
       let fileName = param.file.uid + suffix
       let res = await this.client.put(fileName, param.file)
       param.file.urll = res.url
