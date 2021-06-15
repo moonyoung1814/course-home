@@ -23,12 +23,6 @@
         <el-form-item label="学分">
           <el-input v-model="credit" />
         </el-form-item>
-        <el-form-item label="总学时">
-          <el-input v-model="totalHours" />
-        </el-form-item>
-        <el-form-item label="实验学时">
-          <el-input v-model="experHours" />
-        </el-form-item>
         <el-form-item label="开课学期">
           <el-input v-model="semester" />
         </el-form-item>
@@ -37,6 +31,12 @@
         </el-form-item>
         <el-form-item label="起始周">
           <el-input v-model="week" />
+        </el-form-item>
+        <el-form-item label="总学时">
+          <el-input v-model="totalHours" />
+        </el-form-item>
+        <el-form-item label="实验学时">
+          <el-input v-model="experiHours" />
         </el-form-item>
         <el-form-item label="讲授学时">
           <el-input v-model="teachHours" />
@@ -95,22 +95,6 @@
       </el-form>
     </div>
     <div>
-      <el-upload
-        v-if="isAdd == false"
-        class="confirm"
-        action=""
-        :on-change="handleChange"
-        :on-remove="handleRemove"
-        :on-exceed="handleExceed"
-        :limit="limitUpload"
-        accept="application/vnd.openxmlformats-
-        officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx"
-        :auto-upload="false">
-          <el-button size="small" type="primary">上传成绩册</el-button>
-      </el-upload>
-      <el-button @click="renderDoc" type="primary" class="confirm">
-        生成教学文档
-      </el-button>
       <el-button @click="handleAdd" type="primary" class="confirm" v-if="isAdd == true">
         添加课程实例
       </el-button>
@@ -122,15 +106,8 @@
 </template>
 
 <script>
-import Docxtemplater from 'docxtemplater'
-import PizZip from 'pizzip'
-import PizZipUtils from 'pizzip/utils/index.js'
-import { saveAs } from 'file-saver'
 import axios from 'axios'
 
-function loadFile (url, callback) {
-  PizZipUtils.getBinaryContent(url, callback)
-}
 
 export default {
   data () {
@@ -181,7 +158,7 @@ export default {
       module: '', // 模块
       credit: '', // 学分
       totalHours: '', // 总学时
-      experHours: '', // 实验学时
+      experiHours: '', // 实验学时
       semester: '', // 开课学期
       assessment: '', // 考核方式
       week: '', // 起始周
@@ -206,82 +183,17 @@ export default {
     }
   },
   created () {
-
-  },
-  beforeRouteEnter (to, from, next) {
-    // 获取上个页面，vm相当于this
-    next(vm => {
-      var that = vm.isAdd
-      if (from.name == 'courseInfo') {
-        if (that == true) {
-          vm.addAssign()
-          console.log('addSuccess')
-          console.log(that)
-        } else if (that == false) {
-          vm.addAssign()
-          vm.editAssign()
-          console.log('editSuccess')
-        } else {
-          console.log('success')
-        }
-      } else {
-        console.log('failed')
-      }
-    })
+    if (this.$route.params.isAdd === undefined) {
+      this.$message('您还未选择要编辑的实例！')
+      this.$router.go(-1)
+    } else if (this.$route.params.isAdd === true) {
+      this.addAssign()
+    } else {
+      this.addAssign()
+      this.editAssign()
+    }
   },
   methods: {
-    renderDoc () {
-      loadFile(
-        'http://template.moonyoung.top/course-template.docx',
-        (error, content) => {
-          if (error) {
-            throw error
-          }
-          var zip = new PizZip(content)
-          var doc = new Docxtemplater().loadZip(zip)
-          doc.setData({
-            teacherName: this.teacherName, // 教师姓名
-            courseName: this.courseName, // 课程名
-            courseCode: this.courseCode, // 课程号
-            nature: this.nature, // 课程性质
-            time: this.getDate(), // 填表日期
-            credit: this.credit, // 学分
-            totalHours: this.totalHours, // 总学时
-            resource: this.resource, // 参考书目
-            assessment: this.assessment, // 考核方式
-            teachHours: this.teachHours,
-            experHours: this.experHours,
-            operateHours: this.operateHours,
-            practiceHours: this.practiceHours,
-            selfStudyHours: this.selfStudyHours,
-            clints: this.clints
-          })
-          try {
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render()
-          } catch (error) {
-            // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-            if (error.properties && error.properties.errors instanceof Array) {
-              const errorMessages = error.properties.errors
-                .map(function (error) {
-                  return error.properties.explanation
-                })
-                .join('\n')
-              console.log('errorMessages', errorMessages)
-              // errorMessages is a humanly readable message looking like this :
-              // 'The tag beginning with "foobar" is unopened'
-            }
-            throw error
-          }
-          var out = doc.getZip().generate({
-            type: 'blob',
-            mimeType:
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-          }) // Output the document using Data-URI
-          saveAs(out, 'output.docx')
-        }
-      )
-    },
     getDate () {
       let date = new Date()
       return date.getFullYear().toString() + '.' + (date.getMonth() + 1).toString() + '.' + date.getDate().toString()
@@ -407,60 +319,56 @@ export default {
     },
     // 创建课程实例
     async handleAdd () {
-      if (this.year != '' && this.semeter != '' && this.weekday != '' && this.time != '' && this.book != '' && this.resource != '') {
-        axios.post('http://api.moonyoung.top/api/admin/courseInstance',
-          {
-            year: this.year,
-            semeter: this.semeter,
-            weekday: this.weekday,
-            time: this.schooltime,
-            book: this.book,
-            resource: this.resource,
-            course: 1
-          })
-          .then(res => {
-            this.$message('创建实例成功')
-            console.log(res)
-          })
-          .catch(err => {
-            this.$message('创建实例出错')
-            console.log(err)
-          })
-      } else {
-        this.$message('填入内容不能为空')
-      }
+      axios.post('http://api.moonyoung.top/api/admin/courseInstance',
+        {
+          year: this.year,
+          semeter: this.semeter,
+          weekday: this.weekday,
+          time: this.schooltime,
+          book: this.book,
+          resource: this.resource,
+          teachHours: this.teachHours,
+          experiHours: this.experiHours,
+          operateHours: this.operateHours,
+          practiceHours: this.practiceHours,
+          selfStudyHours: this.selfStudyHours,
+          course: this.course.id
+        })
+        .then(res => {
+          this.$message('创建实例成功')
+          console.log(res)
+          this.$router.go(-1)
+        })
+        .catch(err => {
+          this.$message('创建实例出错')
+          console.log(err)
+        })
     },
     // 编辑课程实例
     async handleEdit () {
-      var that = this.courseInstance
-      // 不为空
-      if (this.semeter != '' && this.book != '' && this.resource != '') {
-        // 需要修改
-        if (this.semeter != that.semeter || this.year != that.year || this.weekday != that.weekday || this.schooltime != that.time || this.book != that.book || this.resource != that.resource) {
-          axios.patch('http://api.moonyoung.top/api/admin/courseInstance/' + this.courseInfoId,
-            {
-              year: this.year,
-              semeter: this.semeter,
-              weekday: this.weekday,
-              time: this.schooltime,
-              book: this.book,
-              resource: this.resource,
-              course: 1
-            })
-            .then(res => {
-              this.$message('编辑实例成功')
-              console.log(res)
-            })
-            .catch(err => {
-              this.$message('编辑实例出错')
-              console.log(err)
-            })
-        } else {
-          this.$message('您未曾编辑实例')
-        }
-      } else {
-        this.$message('填入内容不能为空')
-      }
+      axios.patch('http://api.moonyoung.top/api/admin/courseInstance/' + this.courseInfoId,
+        {
+          year: this.year,
+          semeter: this.semeter,
+          weekday: this.weekday,
+          time: this.schooltime,
+          book: this.book,
+          resource: this.resource,
+          teachHours: this.teachHours,
+          experiHours: this.experiHours,
+          operateHours: this.operateHours,
+          practiceHours: this.practiceHours,
+          selfStudyHours: this.selfStudyHours
+        })
+        .then(res => {
+          this.$message('编辑实例成功')
+          console.log(res)
+          this.$router.go(-1)
+        })
+        .catch(err => {
+          this.$message('编辑实例出错')
+          console.log(err)
+        })
     },
     // 创建实例时赋值操作
     addAssign () {
@@ -474,7 +382,7 @@ export default {
       this.credit = that.credit
       this.totalHours = that.totalHours
       this.assessment = that.assessment
-      this.experHours = that.experiHours
+      this.experiHours = that.experiHours
       this.semester = that.semester
       this.week = that.week
     },
@@ -485,6 +393,11 @@ export default {
       this.year = that.year
       this.semeter = that.semeter
       this.weekday = that.weekday
+      this.experiHours = that.experiHours
+      this.teachHours = that.teachHours
+      this.operateHours = that.operateHours
+      this.practiceHours = that.practiceHours
+      this.selfStudyHours = that.selfStudyHours
       this.schooltime = that.time
       this.book = that.book
       this.resource = this.changeLine(that.resource)

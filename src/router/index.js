@@ -121,6 +121,14 @@ let addRouter = [
         children: []
       },
       {
+        path: '/courseManage/courseInstance',
+        iconCls: 'fa fa-toggle-on',
+        name: routeName.courseInstance,
+        component: () => import('@/views/courseManage/showCourseIns'),
+        meta: {role: ['teacher']},
+        children: []
+      },
+      {
         path: '/courseManage/manageGrade',
         iconCls: 'fa fa-toggle-on',
         name: routeName.manageGrade,

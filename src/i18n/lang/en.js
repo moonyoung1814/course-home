@@ -26,6 +26,7 @@ const en = {
     myProject: 'myProject',
     createProject: 'createProject',
     updateProject: 'updateProject',
+    courseInstance: 'courseInstance',
     infoManage: 'infoManage',
     studentInfo: 'studentInfo',
     teacherInfo: 'teacherInfo',
