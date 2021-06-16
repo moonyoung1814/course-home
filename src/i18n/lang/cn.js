@@ -26,7 +26,7 @@ const cn = {
     myProject: '我的项目',
     createProject: '新建项目',
     updateProject: '编辑项目信息',
-    courseInstance: '课程实例管理',
+    courseInstance: '我的课程实例',
     infoManage: '个人信息管理',
     studentInfo: '学生个人信息',
     teacherInfo: '教师个人信息',

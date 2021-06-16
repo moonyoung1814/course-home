@@ -125,7 +125,7 @@ let addRouter = [
         iconCls: 'fa fa-toggle-on',
         name: routeName.courseInstance,
         component: () => import('@/views/courseManage/showCourseIns'),
-        meta: {role: ['teacher']},
+        meta: {role: ['teacher', 'student']},
         children: []
       },
       {
@@ -140,7 +140,7 @@ let addRouter = [
         path: '/courseManage/courseApply',
         iconCls: 'fa fa-toggle-on',
         name: routeName.courseApply,
-        component: () => import('@/views/courseManage/courseApply'),
+        component: () => import('@/views/courseManage/courseApply/courseApply'),
         meta: {role: ['student']},
         children: []
       }

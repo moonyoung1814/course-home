@@ -41,6 +41,12 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
+              type="primary"
+              v-role-btn="['student']"
+              @click="handleShow(scope.$index, scope.row)"> 查看详情
+            </el-button>
+            <el-button
+              size="mini"
               v-role-btn="['teacher']"
               @click="handleEdit(scope.$index, scope.row)">修改
             </el-button>
@@ -67,6 +73,24 @@
           </template>
         </el-table-column>
     </el-table>
+    <el-dialog
+      title="详情"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <el-table :data="detail">
+        <el-table-column
+          prop="name"
+          label="属性">
+        </el-table-column>
+        <el-table-column
+          prop="value"
+          label="信息">
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,7 +107,47 @@ function loadFile (url, callback) {
 export default {
   data () {
     return {
-      courseInstances: []
+      courseInstances: [],
+      currentIns: null,
+      dialogVisible: false
+    }
+  },
+  computed: {
+    detail () {
+      if (this.currentIns) {
+        return [
+          {
+            name: '课程名',
+            value: this.currentIns.course.title
+          },
+          {
+            name: '授课教师',
+            value: this.currentIns.teacher.name
+          },
+          {
+            name: '上课时间',
+            value: this.currentIns.weekday + this.currentIns.time
+          },
+          {
+            name: '开课学期',
+            value: this.currentIns.year + '-' + this.currentIns.semeter
+          },
+          {
+            name: '学分',
+            value: this.currentIns.course.credit
+          },
+          {
+            name: '教材',
+            value: this.currentIns.book
+          },
+          {
+            name: '参考资料',
+            value: this.currentIns.resource
+          }
+        ]
+      } else {
+        return []
+      }
     }
   },
   created () {
@@ -93,7 +157,7 @@ export default {
   },
   methods: {
     async getData () {
-      this.courseInstances = (await axios.get('admin/courseInstance/', {params: {relations: 'course'}})).data.data
+      this.courseInstances = (await axios.get('admin/courseInstance/', {params: {relations: 'course,teacher'}})).data.data
     },
     handleEdit (index, row) {
       this.$router.push({name: 'editCourseIns', params: {isAdd: false, courseInstance: row, course: row.course}})
@@ -166,6 +230,10 @@ export default {
         return
       }
       this.$router.push({path: '/courseManage/manageGrade', query: {courseInstance: row.id}})
+    },
+    handleShow (index, row) {
+      this.dialogVisible = true
+      this.currentIns = row
     }
   }
 }
